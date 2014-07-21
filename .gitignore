@@ -1,0 +1,9 @@
+*~
+*.o
+*.swp
+forward_data/
+results/
+sample_data/
+gen_samples
+rms_test
+kiss_fft

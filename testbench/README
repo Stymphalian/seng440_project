@@ -1,0 +1,6 @@
+make 
+./generate.sh
+
+
+drop you program into here. (rename it to 'noin')
+./test.sh
