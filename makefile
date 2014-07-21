@@ -30,3 +30,4 @@ $(OBJDIR):
 
 clean:
 	rm -rf $(OBJDIR)  noin* *.o *~
+	rm *.test
