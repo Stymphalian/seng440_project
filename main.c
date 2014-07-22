@@ -175,13 +175,13 @@ int _fft(complex_t* input, complex_t* output, int n, int step, int offset){
 
 int forward_fft(complex_t* input, complex_t* output, int n){
 	if( !input || !output ) {return 0;}
-	return _fft2(input, output,n,1,0);
+	return _fft(input, output,n,1,0);
 }
 
 int inverse_fft(complex_t* input, complex_t* output, int n){
 	if( !input || !output ) {return 0;}
 	swap_complex_array(input,n);
-	int rs = _fft2(input, output, n,1,0);
+	int rs = _fft(input, output, n,1,0);
 	swap_complex_array(input,n);
 
 	if( rs == 0){return 0;}

@@ -1,17 +1,17 @@
-4 usecs = 238
-8 usecs = 277
-16 usecs = 328
-32 usecs = 454
-64 usecs = 726
-128 usecs = 1600
-256 usecs = 2863
-512 usecs = 5553
-1024 usecs = 11667
-2048 usecs = 24827
-4096 usecs = 54535
-8192 usecs = 114527
-16384 usecs = 253514
-32768 usecs = 520019
-65536 usecs = 1127619
-131072 usecs = 2395589
-262144 usecs = 5188875
+         4 samples          36 usecs
+         8 samples          59 usecs
+        16 samples         121 usecs
+        32 samples         240 usecs
+        64 samples         521 usecs
+       128 samples        1108 usecs
+       256 samples        2429 usecs
+       512 samples        5108 usecs
+      1024 samples       11384 usecs
+      2048 samples       24314 usecs
+      4096 samples       53566 usecs
+      8192 samples      112781 usecs
+     16384 samples      245044 usecs
+     32768 samples      524437 usecs
+     65536 samples     1118857 usecs
+    131072 samples     2436424 usecs
+    262144 samples     5298157 usecs
