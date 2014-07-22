@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for (( i=1, pow=2; i <= 18; i++ )) 
+for (( i=1, pow=2; i <= 17; i++ )) 
 do
 	(( pow *= 2 ))	
 	./testbench/gen_samples $pow 1 1 > "$pow"_input.test
