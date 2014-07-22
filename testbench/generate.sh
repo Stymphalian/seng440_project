@@ -19,12 +19,12 @@ for (( i = 1,pow=2; i <= 18; i++ ))
 do
 	((pow *= 2))
 	echo "forward FFT for $pow samples"
-	./$fft $pow 0 "$pow"_re_sin_samples 		> "$pow"_re_sin_forward
-	./$fft $pow 0 "$pow"_re_im_sin_samples 	> "$pow"_re_im_sin_forward
-	./$fft $pow 0 "$pow"_re_step_samples		> "$pow"_re_step_forward
-	./$fft $pow 0 "$pow"_re_im_step_samples 	> "$pow"_re_im_step_forward
-	./$fft $pow 0 "$pow"_re_rect_samples 		> "$pow"_re_rect_forward
-	./$fft $pow 0 "$pow"_re_im_rect_samples 	> "$pow"_re_im_rect_forward
+	./$fft $pow 0 < "$pow"_re_sin_samples 			> "$pow"_re_sin_forward
+	./$fft $pow 0 < "$pow"_re_im_sin_samples 		> "$pow"_re_im_sin_forward
+	./$fft $pow 0 < "$pow"_re_step_samples			> "$pow"_re_step_forward
+	./$fft $pow 0 < "$pow"_re_im_step_samples 	> "$pow"_re_im_step_forward
+	./$fft $pow 0 < "$pow"_re_rect_samples 		> "$pow"_re_rect_forward
+	./$fft $pow 0 < "$pow"_re_im_rect_samples 	> "$pow"_re_im_rect_forward
 done
 
 mkdir sample_data
