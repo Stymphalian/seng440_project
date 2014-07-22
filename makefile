@@ -1,6 +1,7 @@
 CC=gcc
 CTYPE=c
 CFLAGS=-c -Wall
+#CFLAGS=-c -Wall -DTIME_TEST
 INFLAGS=-Iinclude
 LDFLAGS=-L. -lm -lrt
 
