@@ -32,7 +32,12 @@ testbench/
 
 
 time_benchmark/
-	Folder contating the timing tests for all the implementations.
+	Folder containing the timing tests for all the implementations.
 	timetests_1 is the timetests for the fft1.c implementation.
 	timetests_2 is the timetests for the fft2.c implementation.
 	etc..
+
+	1. Ensure that the testbench program are compiled.
+	2. Modify the makefile such that -DTIME_TEST is set.
+	3. run make
+	4. run ./test.sh 
