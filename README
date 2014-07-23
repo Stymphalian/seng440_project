@@ -1,0 +1,38 @@
+fft.h 
+	header file for basic fft functions.
+	the header file includes the following function prototypes:
+	_fft(complex_t* input, complex_t* output, int n);
+
+fft_util.c 
+	source file for utility fft.h functions.
+
+fft1.c
+	first implementaion of the fft. Recursive and uses O(n^2)
+	additional space per iteration.
+
+fft2.c
+	recursive + O(n) additional memory consumption
+
+fft3.c
+	recursive -> iterative implemntation
+
+
+testbench/
+	Files for testing an implemenation of the fft.
+	Workflow for running tests.
+	1. run 'make' to make the fft program ( default name = 'noin' )
+	2. 'cp noin testbench/'
+	3. 'cd testbench'
+	4. run 'make' to create the testbench programs
+	5. ./generate.sh -- Generate all the test data
+	6. ./test.sh  > rs.test -- Run the tests and output the results
+	7. open the rs.test file and check to see that the error is not "bad"
+	8. make clean  -- clean up all the test data
+	9. ./clean.sh
+
+
+time_benchmark/
+	Folder contating the timing tests for all the implementations.
+	timetests_1 is the timetests for the fft1.c implementation.
+	timetests_2 is the timetests for the fft2.c implementation.
+	etc..
