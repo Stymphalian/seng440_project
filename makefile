@@ -6,7 +6,7 @@ INFLAGS=-Iinclude
 LDFLAGS=-L. -lm -lrt
 
 OBJDIR:=objdir
-SOURCES=main.$(CTYPE)
+SOURCES=main.$(CTYPE) fft3.$(CTYPE) fft_util.$(CTYPE)
 OBJECTS=$(addprefix $(OBJDIR)/, $(SOURCES:.$(CTYPE)=.o) )
 
 EXECUTABLE=noin
@@ -30,5 +30,4 @@ $(OBJDIR):
 	mkdir $(OBJDIR)
 
 clean:
-	rm -rf $(OBJDIR)  noin* *.o *~
-	rm *.test
+	rm -rf $(OBJDIR)  noin* *.o *~ *.test
