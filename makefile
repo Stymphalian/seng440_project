@@ -1,13 +1,13 @@
 CC=gcc
 CTYPE=c
-#CFLAGS=-c -Wall
-CFLAGS=-c -Wall -DTIME_TEST
+CFLAGS=-c -Wall
+#CFLAGS=-c -Wall -DTIME_TEST
 INFLAGS=-Iinclude 
-#LDFLAGS=-L. -lm 
-LDFLAGS=-L. -lm -lrt
+LDFLAGS=-L. -lm 
+#LDFLAGS=-L. -lm -lrt
 
 OBJDIR:=objdir
-SOURCES=main.$(CTYPE) fft5.$(CTYPE) fft_util.$(CTYPE)
+SOURCES=main.$(CTYPE) fft6.$(CTYPE) fft_util.$(CTYPE)
 OBJECTS=$(addprefix $(OBJDIR)/, $(SOURCES:.$(CTYPE)=.o) )
 
 EXECUTABLE=noin

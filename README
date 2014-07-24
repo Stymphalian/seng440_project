@@ -20,6 +20,15 @@ fft4.c
 	profiled the code and 100% of the time was spent calculating the twiddles.
 	Precalculate the twiddle factors, and passed in an fft_t context structure
 	for the _fft function to get access to the twiddles.	
+	Performance increase: ~200%
+
+fft5.c 
+	Faster implementation of the bit_reversal function.
+	Performance increase: ~0.2%
+
+fft6.c 
+	Inlined the 'complex_mult' method.
+	Performance increase: pending
 
 
 testbench/
@@ -38,9 +47,10 @@ testbench/
 
 time_benchmark/
 	Folder containing the timing tests for all the implementations.
+	Example files:
 	time1 - for timing test for fft1.c
 	data3 - is the gprof data for fft3.c
-	time_3_4.diff - the time improvement from version 3 to version 4
+	diff_3_4 - the time improvement from version 3 to version 4
 
 
 	To obtain the time{x} data
@@ -53,5 +63,3 @@ time_benchmark/
 	1. Compile with -pg flages
 	2. ./noin 65536 0 < testbench/sample_data/65536_re_im_samples
 	3. gprof ./noin >data{x}
-		
-
