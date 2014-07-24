@@ -1,0 +1,17 @@
+         4 samples          40 usecs
+         8 samples          47 usecs
+        16 samples          69 usecs
+        32 samples         116 usecs
+        64 samples         191 usecs
+       128 samples         372 usecs
+       256 samples         779 usecs
+       512 samples        1634 usecs
+      1024 samples        3542 usecs
+      2048 samples        7724 usecs
+      4096 samples       17103 usecs
+      8192 samples       38362 usecs
+     16384 samples       86660 usecs
+     32768 samples      197611 usecs
+     65536 samples      444075 usecs
+    131072 samples      968244 usecs
+    262144 samples     2064795 usecs
