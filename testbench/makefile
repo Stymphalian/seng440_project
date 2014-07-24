@@ -3,7 +3,6 @@ CFLAGS=-c -Wall
 INFLAGS=-Iinclude
 LDFLAGS=-L. -lm
 
-
 all: kiss_fft gen_samples rms_test
 		
 kiss_fft: base_fft.c kiss_fft.c kiss_fft.h _kiss_fft_guts.h
