@@ -3,8 +3,10 @@
 
 typedef struct complex_t complex_t;
 struct complex_t{
-	unsigned int re;
-	unsigned int im;
+	//unsigned int re;
+	//unsigned int im;
+	float re;
+	float im;
 };
 
 

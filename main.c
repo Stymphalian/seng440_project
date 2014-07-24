@@ -26,7 +26,7 @@ int main(int argc, char** argv){
 		free(output);
 		return 0;
 	}
-	double re,im;
+	float re,im;
 	for(i =0;i < number_samples; ++i){		
 		if(EOF == scanf("%f %f",&re,&im) ){
 			printf("Not enough samples. Expected %d samples, but only %d read\n",

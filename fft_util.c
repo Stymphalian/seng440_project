@@ -28,8 +28,8 @@ void print_spaces(int n){
 }
 
 void print_complex(complex_t c){
-	//printf("%.20f %.20f\n", c.re, c.im);
-	printf("%u %u\n", c.re, c.im);
+	printf("%.20f %.20f\n", c.re, c.im);
+	//printf("%u %u\n", c.re, c.im);
 }
 void print_complex_array(complex_t* c, int n){
 	unsigned i ;
