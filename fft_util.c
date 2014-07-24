@@ -28,10 +28,11 @@ void print_spaces(int n){
 }
 
 void print_complex(complex_t c){
-	printf("%.20f %.20f\n", c.re, c.im);
+	//printf("%.20f %.20f\n", c.re, c.im);
+	printf("%u %u\n", c.re, c.im);
 }
 void print_complex_array(complex_t* c, int n){
-	int i ;
+	unsigned i ;
 	for( i = 0;i < n; ++i){
 		print_complex(c[i]);
 	}
@@ -64,11 +65,11 @@ void complex_add(complex_t* left, complex_t* right,complex_t* rs){
 
 
 // Forward and Inverse FFT
-int forward_fft(complex_t* input, complex_t* output, int n){
+int forward_fft(complex_t* input, complex_t* output, unsigned int n){
 	if(!input || !output){return 0;}
 	return _fft(input, output,n);
 }
-int inverse_fft(complex_t* input, complex_t* output, int n){
+int inverse_fft(complex_t* input, complex_t* output, unsigned int n){
 	if(!input || !output){return 0;}
 	swap_complex_array(input,n);
 	int rs= _fft(input, output,n);

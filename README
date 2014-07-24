@@ -30,6 +30,9 @@ fft6.c
 	Inlined the 'complex_mult' method.
 	Performance increase: 1.06848584 speedup
 
+fft7.c
+	Floating point to fixed point arithmetic.
+
 
 testbench/
 	Files for testing an implemenation of the fft.
@@ -63,3 +66,10 @@ time_benchmark/
 	1. Compile with -pg flages
 	2. ./noin 65536 0 < testbench/sample_data/65536_re_im_samples
 	3. gprof ./noin >data{x}
+
+
+
+FUTURE IMPROVEMENTS:
+1. Memory thrasing.When performing the butterfly, the indices of each half of the butter fly 
+are N/2 away from each other. Given that N can be quite large, this will probably incur
+cache misses,thereby killig our performance.

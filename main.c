@@ -26,12 +26,15 @@ int main(int argc, char** argv){
 		free(output);
 		return 0;
 	}
-	for(i =0;i < number_samples; ++i){
-		if(EOF == scanf("%f %f", &input[i].re, &input[i].im) ){
+	double re,im;
+	for(i =0;i < number_samples; ++i){		
+		if(EOF == scanf("%f %f",&re,&im) ){
 			printf("Not enough samples. Expected %d samples, but only %d read\n",
 						number_samples,i);
 			return 0;
 		}
+		input[i].re = re;
+		input[i].im = im;
 	}
 
 
