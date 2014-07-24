@@ -1,6 +1,7 @@
 #!/bin/bash
 
 program=noin
+comp=rms_test
 
 for (( i = 1,pow=2; i <= 18; i++ ))
 do
@@ -27,7 +28,6 @@ do
 done
 
 
-comp=rms_test
 for (( i = 1,pow=2; i <= 18; i++ ))
 do
 	((pow *= 2))

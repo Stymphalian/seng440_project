@@ -8,9 +8,15 @@
 
 // Stolen directly from the hello_fft.c  file
 unsigned Microseconds(void){
+#ifdef _WIN64
+	return 0;
+#elif _WIN32
+	return 0;
+#else
 	struct timespec ts;
 	clock_gettime(CLOCK_REALTIME, &ts);
 	return ts.tv_sec*1000000 + ts.tv_nsec/1000;
+#endif
 }
 
 void print_spaces(int n){
@@ -43,16 +49,6 @@ void swap_complex_array(complex_t* c,int n){
 	}
 }
 
-// Twiddle factors W_N defined as e^(-j2*pi*nk/N)
-// N: is the base twiddle factor
-// power: is the 'nk' portion of twiddle
-// e^ja = cos(a) + jsin(a)
-complex_t twiddle(int N, int k){
-	complex_t rs;
-	rs.re = cos((2*M_PI*k)/N);
-	rs.im = -sin((2*M_PI*k)/N);
-	return rs;
-}
 
 // multiplies left*right and places the result in left
 void complex_mult(complex_t* left, complex_t* right,complex_t* rs){

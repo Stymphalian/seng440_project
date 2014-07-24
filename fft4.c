@@ -7,13 +7,26 @@
 #include <limits.h>
 
 
+typedef struct fft_t fft_t;
+struct fft_t{
+	complex_t* input;
+	complex_t* output;
+	complex_t* twiddles;
+	int n;	
+};
 
+// Twiddle factors W_N defined as e^(-j2*pi*nk/N)
+// N: is the base twiddle factor
+// power: is the 'nk' portion of twiddle
+// e^ja = cos(a) + jsin(a)
 static complex_t twiddle(int N, int k){
 	complex_t rs;
 	rs.re = cos((2*M_PI*k)/N);
 	rs.im = -sin((2*M_PI*k)/N);
+	//printf("N=%d,k=%d === (%f,%f)\n",N,k, rs.re, rs.im);	
 	return rs;
 }
+
 static int bit_len(int n){
 	int i =0;
 	for(i = 0;i < 32; ++i){
@@ -44,9 +57,26 @@ static void jig_input(complex_t* input, complex_t* output, int n){
 	}	
 }
 
-int _fft(complex_t* input, complex_t* output, int n){
-	jig_input(input,output,n);
+static int init_context(fft_t* context,complex_t* input, complex_t* output, int n){
+	context->input = input;
+	context->output = output;
+	context->n = n;
+	jig_input(input, output, n);	
 
+	context->twiddles = malloc(sizeof(complex_t)* (n/2));
+	int i = 0;
+	for( i = 0;i < n/2; ++i){
+		context->twiddles[i] = twiddle(n,i);
+	}
+	return 1;
+}
+
+static void destroy_context(fft_t* context){
+	free(context->twiddles);	
+}
+
+
+int _fft2(fft_t* context,complex_t* output,int n){	
 	int level = 0;
 	int num_levels = bit_len(n);
 	int block_size = 2;
@@ -72,7 +102,9 @@ int _fft(complex_t* input, complex_t* output, int n){
 				Y_k = out[i];
 				Z_k = out[i +block_size/2];	
 
-				W = twiddle(block_size, i);
+				//W = twiddle(block_size, i);
+				//printf("\t\t%d\n",(n/block_size)*i);
+				W = context->twiddles[(n/block_size)*i];
 				complex_t temp;
 				complex_mult(&W,&Z_k,&temp);
 
@@ -86,4 +118,13 @@ int _fft(complex_t* input, complex_t* output, int n){
 		block_size *= 2;
 	}
 	return 1;
+}
+
+int _fft(complex_t* input, complex_t* output, int n){
+	int rs = 0;
+	fft_t context;
+	init_context(&context, input, output, n);
+	rs = _fft2(&context,context.output,context.n);	
+	destroy_context(&context);
+	return rs;
 }

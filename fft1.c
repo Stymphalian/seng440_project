@@ -7,6 +7,18 @@
 
 #include "fft.h"
 
+
+// Twiddle factors W_N defined as e^(-j2*pi*nk/N)
+// N: is the base twiddle factor
+// power: is the 'nk' portion of twiddle
+// e^ja = cos(a) + jsin(a)
+static complex_t twiddle(int N, int k){
+	complex_t rs;
+	rs.re = cos((2*M_PI*k)/N);
+	rs.im = -sin((2*M_PI*k)/N);
+	return rs;
+}
+
 // input: pointer to an array of complex input samples
 // ouptut: pointer to an array where the result can be placed.
 // n : the number of samples.

@@ -14,7 +14,7 @@ void print_spaces(int n);
 void print_complex(complex_t c);
 void print_complex_array(complex_t* c, int n);
 void swap_complex_array(complex_t* c, int n);
-complex_t twiddle(int N,int k);
+//complex_t twiddle(int N,int k);
 void complex_mult(complex_t* left, complex_t* right, complex_t* rs);
 void complex_add(complex_t* left, complex_t* right, complex_t* rs);
 int forward_fft(complex_t* input, complex_t* output, int n);

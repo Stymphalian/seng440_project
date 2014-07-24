@@ -6,6 +6,18 @@
 #include <time.h>
 #include <limits.h>
 
+
+// Twiddle factors W_N defined as e^(-j2*pi*nk/N)
+// N: is the base twiddle factor
+// power: is the 'nk' portion of twiddle
+// e^ja = cos(a) + jsin(a)
+static complex_t twiddle(int N, int k){
+	complex_t rs;
+	rs.re = cos((2*M_PI*k)/N);
+	rs.im = -sin((2*M_PI*k)/N);
+	return rs;
+}
+
 static int bit_len(int n){
 	int i =0;
 	for(i = 0;i < 32; ++i){

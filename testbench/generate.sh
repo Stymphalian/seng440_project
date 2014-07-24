@@ -1,6 +1,8 @@
 #!/bin/bash
 
 generator=gen_samples
+fft=kiss_fft
+
 for (( i = 1,pow=2; i <= 18; i++ ))
 do
 	((pow *= 2))
@@ -14,7 +16,6 @@ do
 
 done
 
-fft=kiss_fft
 for (( i = 1,pow=2; i <= 18; i++ ))
 do
 	((pow *= 2))
