@@ -103,6 +103,9 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 	int level = 0;
 	int num_levels = bit_len32(n);
 	int block_size = 2;
+
+	// num_levels -1 because we don't need to worry about block_size = 1 case.
+	// It is already handled by the jig_input().
 	for( level = num_levels-1; level != 0 ; --level){
 
 		int num_blocks = n / block_size;

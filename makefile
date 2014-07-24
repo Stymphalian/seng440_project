@@ -1,9 +1,9 @@
 CC=gcc
 CTYPE=c
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -pg
 #CFLAGS=-c -Wall -DTIME_TEST
 INFLAGS=-Iinclude 
-LDFLAGS=-L. -lm 
+LDFLAGS=-L. -lm -pg
 #LDFLAGS=-L. -lm -lrt
 
 OBJDIR:=objdir
