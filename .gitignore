@@ -9,3 +9,4 @@ rms_test
 kiss_fft
 noin
 *.exe
+*.test
