@@ -38,11 +38,20 @@ testbench/
 
 time_benchmark/
 	Folder containing the timing tests for all the implementations.
-	timetests_1 is the timetests for the fft1.c implementation.
-	timetests_2 is the timetests for the fft2.c implementation.
-	etc..
+	time1 - for timing test for fft1.c
+	data3 - is the gprof data for fft3.c
+	time_3_4.diff - the time improvement from version 3 to version 4
 
+
+	To obtain the time{x} data
 	1. Ensure that the testbench program are compiled.
 	2. Modify the makefile such that -DTIME_TEST is set.
 	3. run make
 	4. run ./test.sh 
+
+	To obtain the data{x} data
+	1. Compile with -pg flages
+	2. ./noin 65536 0 < testbench/sample_data/65536_re_im_samples
+	3. gprof ./noin >data{x}
+		
+

@@ -42,7 +42,7 @@ int main(int argc, char** argv){
 	}else{
 		forward_fft(input, output, number_samples);
 	}
-	print_complex_array(output,number_samples);
+	//print_complex_array(output,number_samples);
 #else
 	//compute the fft
 	unsigned total_time = 0;
