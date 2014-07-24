@@ -20,15 +20,15 @@ fft4.c
 	profiled the code and 100% of the time was spent calculating the twiddles.
 	Precalculate the twiddle factors, and passed in an fft_t context structure
 	for the _fft function to get access to the twiddles.	
-	Performance increase: ~200%
+	Performance increase: 2.29191951 speedup	
 
 fft5.c 
 	Faster implementation of the bit_reversal function.
-	Performance increase: ~0.2%
+	Performance increase: 1.125691942 speedup
 
 fft6.c 
 	Inlined the 'complex_mult' method.
-	Performance increase: pending
+	Performance increase: 1.06848584 speedup
 
 
 testbench/

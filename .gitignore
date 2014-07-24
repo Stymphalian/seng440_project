@@ -10,3 +10,4 @@ kiss_fft
 noin
 *.exe
 *.test
+gmon.out
