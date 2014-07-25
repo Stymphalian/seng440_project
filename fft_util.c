@@ -90,8 +90,10 @@ int inverse_fft(complex_t* input, complex_t* output, unsigned int n){
 	int i = 0;
 	swap_complex_array(output,n);
 	for( i = 0; i < n; ++i){
-		output[i].re /= n;
-		output[i].im /= n;	
+		//output[i].re /= n;
+		//output[i].im /= n;
+		output[i].re = scale32i(unscale32i(output[i].re,20)/n,20);
+		output[i].im = scale32i(unscale32i(output[i].im,20)/n,20);
 	}
 	return rs;
 }

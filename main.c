@@ -17,27 +17,16 @@ void print_bits(unsigned long long x){
 	}
 }
 
-
-static complex_t twiddler(unsigned N, unsigned k){
-	complex_t rs;
-	double re,im;
-	re = cos((2*M_PI*k)/N);
-	im = -sin((2*M_PI*k)/N);
-	
-	//printf("N=%d,k=%d === (%f,%f)\n",N,k, rs.re, rs.im);	
-	//printf("N=%d,k=%d === (%f,%f -> %d,%d)\n",N,k, re, im, rs.re, rs.im);	
-	rs.re = scale32i(re,31);
-	rs.im = scale32i(im,31);
-	printf("N=%d,k=%d === (%f,%f -> %f,%f)\n",N,k, re, im, unscale32i(rs.re,31),unscale32i(rs.im,31));	
-	return rs;	
+void baz(){
+	float a = 0.00000000000000024492;
+	int na = scale32i(a,20);
+	printf("a float = %f\n", a);
+	printf("na fixed = %d\n", na);
+	printf("na float = %f\n", unscale32i(a,20));
+	exit(0);
 }
 
 void bar(){	
-	int i = 0;
-	for( i = 0;i < 4; ++i){
-		twiddler(8,i);
-	}
-
 
 	float fYk_re = 0.5;
 	float fYk_im = -1.0;
@@ -165,6 +154,7 @@ void foo(){
 
 
 int main(int argc, char** argv){
+	//baz();
 	//bar();
 	//foo();	
 	if( argc != 3){
