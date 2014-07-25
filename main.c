@@ -2,9 +2,171 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <limits.h>
+
+
+void print_bits(unsigned long long x){
+	int i= 0;
+	for( i = 63;  i > 0; --i){
+		if( (x & ( 1<< i)) == 1 << i ){
+			printf("1");
+		}else{
+			printf("0");
+		}
+	}
+}
+
+
+static complex_t twiddler(unsigned N, unsigned k){
+	complex_t rs;
+	double re,im;
+	re = cos((2*M_PI*k)/N);
+	im = -sin((2*M_PI*k)/N);
+	
+	//printf("N=%d,k=%d === (%f,%f)\n",N,k, rs.re, rs.im);	
+	//printf("N=%d,k=%d === (%f,%f -> %d,%d)\n",N,k, re, im, rs.re, rs.im);	
+	rs.re = scale32i(re,31);
+	rs.im = scale32i(im,31);
+	printf("N=%d,k=%d === (%f,%f -> %f,%f)\n",N,k, re, im, unscale32i(rs.re,31),unscale32i(rs.im,31));	
+	return rs;	
+}
+
+void bar(){	
+	int i = 0;
+	for( i = 0;i < 4; ++i){
+		twiddler(8,i);
+	}
+
+
+	float fYk_re = 0.5;
+	float fYk_im = -1.0;
+	float fZk_re = 1.25;
+	float fZk_im = -1.0;
+	float twid_re = 1.0;
+	float twid_im = 0.0;	
+
+	int Yk_re = scale32i(fYk_re,20);
+	int Yk_im = scale32i(fYk_im,20);
+	int Zk_re = scale32i(fZk_re,20);
+	int Zk_im = scale32i(fZk_im,20);
+	int W_re = scale32i(twid_re,30);
+	int W_im = scale32i(twid_im,30);
+
+	printf("%d\n",Yk_re);
+	printf("%d\n",Yk_im);
+	printf("%d\n",Zk_re);
+	printf("%d\n",Zk_im);
+	printf("%d\n",W_re );
+	printf("%d\n",W_im );
+	printf("-------\n");	
+
+
+	printf("twid_re*fZk_re = %f\n",twid_re*fZk_re);
+	printf("twid_im*fZk_im = %f\n",twid_im*fZk_im);
+	printf("temp_re = %f\n",twid_re*fZk_re - twid_im*fZk_im );	
+	printf("------\n");
+
+	int temp1 = ((long long int)W_re*Zk_re) >> 32;	
+	int temp2 = ((long long int)W_im*Zk_im) >> 32;		
+	int temp_re = temp1 - temp2;
+	printf("temp1 decimal = %d\n", temp1);
+	printf("temp2 decimal = %d\n", temp2);
+	printf("temp1 = %f\n",unscale32i(temp1,18));
+	printf("temp2 = %f\n",unscale32i(temp2,18))	;
+	printf("temp_re = %f\n",unscale32i(temp_re,18));
+	printf("-----\n");
+
+	printf("twid_im*fZk_re = %f\n",twid_im*fZk_re);
+	printf("twid_re*fZk_im = %f\n",twid_re*fZk_im);
+	printf("temp_im = %f\n",twid_im*fZk_re + twid_re*fZk_im );		
+	printf("------\n");
+
+	temp1 = ((long long int)W_im*Zk_re) >> 32;
+	temp2 = ((long long int)W_re*Zk_im) >> 32;
+	int temp_im = temp1 + temp2;
+	printf("temp1=%f\n",unscale32i(temp1,18));
+	printf("temp2=%f\n",unscale32i(temp2,18))	;
+	printf("temp_im=%f\n",unscale32i(temp_im,18));
+	printf("-----\n");
+
+
+	printf("out[i].re = %f\n", fYk_re + twid_re*fZk_re - twid_im*fZk_im);
+	printf("out[i].im = %f\n", fYk_im + twid_im*fZk_re + twid_re*fZk_im);
+	printf("------\n");
+
+	temp1 = (Yk_re ) + (temp_re << 2);
+	temp2 = (Yk_im ) + (temp_im << 2);
+	printf("out[i].re decimal = %d\n", temp1);
+	printf("out[i].im decimal = %d\n", temp2);
+	printf("out[i].re = %f\n", unscale32i(temp1,20));
+	printf("out[i].im = %f\n", unscale32i(temp2,20));
+	printf("------\n");
+
+
+	printf("out[i + n/2].re = %f\n", fYk_re - (twid_re*fZk_re - twid_im*fZk_im) );
+	printf("out[i + n/2].im = %f\n", fYk_im - (twid_im*fZk_re + twid_re*fZk_im) );
+	printf("------\n");
+
+	temp1 = (Yk_re ) - (temp_re << 2);
+	temp2 = (Yk_im ) - (temp_im << 2);
+	printf("out[i + n/2].re decimal = %d\n", temp1);
+	printf("out[i + n/2].im decimal = %d\n", temp2);
+	printf("out[i + n/2].re = %f\n", unscale32i(temp1,20));
+	printf("out[i + n/2].im = %f\n", unscale32i(temp2,20));
+	printf("------\n");
+
+
+
+
+	printf("%f\n", unscale32i(Yk_re,20));
+	printf("%f\n", unscale32i(Yk_im,20));
+	printf("%f\n", unscale32i(Zk_re,20));
+	printf("%f\n", unscale32i(Zk_im,20));
+	printf("%f\n", unscale32i(W_re ,31));
+	printf("%f\n", unscale32i(W_im ,31));
+
+
+
+	//long long int t = (long long int)W_re*(long long int)Zk_re;
+	//printf("t = %I64d\n",t);	
+	//printf("t = %I64d\n",t >> 32);
+	//int t2 = (int)(t >> 32);
+	//printf("t2 fixed = %d\n",t2);
+	////printf("t2 float = %f\n",unscale32i(t2,20));
+	//printf("t2 float = %f\n",unscale32i(t2,19));
+	exit(0);
+}
+void foo(){	
+	float a = 4.000;
+	float na = -4.00;
+	int p = 0;
+	int np = 0;
+	int scale = 20;
+
+	p = scale32i(a,scale);		
+	printf("float a = %f\n", a);
+	printf("float p = %f\n", a*(1<<scale));
+	printf("fixed a = %d\n", p);	
+	printf("float p = %f\n", unscale32i(p,scale));
+	
+	np = scale32i(na,scale);	
+	printf("float na = %f\n", na);
+	printf("float np = %f\n", na*(1<<scale));
+	printf("fixed na = %d\n", np);	
+	printf("float np = %f\n", unscale32i(np,scale));
+
+	print_bits(p);
+	printf("\n");
+	print_bits(np);
+	printf("\n");
+	exit(0);
+}
 
 
 int main(int argc, char** argv){
+	//bar();
+	//foo();	
 	if( argc != 3){
 		printf("Usage: %s [num_samples] [forward|inverse] \n", argv[0]);
 		return 0;
@@ -26,6 +188,7 @@ int main(int argc, char** argv){
 		free(output);
 		return 0;
 	}
+
 	float re,im;
 	for(i =0;i < number_samples; ++i){		
 		if(EOF == scanf("%f %f",&re,&im) ){
@@ -33,8 +196,16 @@ int main(int argc, char** argv){
 						number_samples,i);
 			return 0;
 		}
-		input[i].re = re;
-		input[i].im = im;
+
+		// bit len: 32b
+		// signed: 1b
+		// -2048....2048: 2^11
+		// scale factor: 2^20
+		input[i].re = scale32i(re,20);
+		input[i].im = scale32i(im,20);		
+		//input[i].re = re;
+		//input[i].im = im;
+		//printf("%d %d\n", input[i].re, input[i].im);		
 	}
 
 
@@ -44,6 +215,17 @@ int main(int argc, char** argv){
 		inverse_fft(input, output, number_samples);
 	}else{
 		forward_fft(input, output, number_samples);
+	}
+
+	for( i = 0; i < number_samples; ++i){		
+		// bit len: 32b
+		// signed : 1b 
+		// scale factor: 20 b
+		float re = unscale32i(output[i].re,20);
+		float im = unscale32i(output[i].im,20);		
+		//float re = output[i].re;
+		//float im = output[i].im;
+		printf("%f %f\n",re,im);
 	}
 	//print_complex_array(output,number_samples);
 #else

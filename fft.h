@@ -3,15 +3,20 @@
 
 typedef struct complex_t complex_t;
 struct complex_t{
-	//unsigned int re;
-	//unsigned int im;
-	float re;
-	float im;
+	int re;
+	int im;
+	//float re;
+	//float im;
 };
 
 
 // all these methods are implemented in jordan_fft_util.h
 unsigned Microseconds(void);
+
+
+int scale32i(float original_value, int scale);
+float unscale32i(int scaled_value, int scale);
+
 void print_spaces(int n);
 void print_complex(complex_t c);
 void print_complex_array(complex_t* c, int n);

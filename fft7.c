@@ -20,15 +20,23 @@ struct fft_t{
 // N: is the base twiddle factor
 // power: is the 'nk' portion of twiddle
 // e^ja = cos(a) + jsin(a)
+// bit-width: 32 bit
+// signed: 1 bit
+// -2.0 ..... 2.0 : 0 bit for decimal
+// scaling factor: 2^32 / 2^1 = 2^30
+// I use a scale factor of 2^30 because there is some weird behaviour when it is 31
 static complex_t twiddle(unsigned N, unsigned k){
 	complex_t rs;
 	double re,im;
 	re = cos((2*M_PI*k)/N);
 	im = -sin((2*M_PI*k)/N);
-	rs.re = re;
-	rs.im = im;
+	
 	//printf("N=%d,k=%d === (%f,%f)\n",N,k, rs.re, rs.im);	
-	return rs;
+	//printf("N=%d,k=%d === (%f,%f -> %d,%d)\n",N,k, re, im, rs.re, rs.im);	
+	rs.re = scale32i(re,30);
+	rs.im = scale32i(im,30);
+	return rs;	
+
 }
 
 // determine the number of trailing zeroes for the number.
@@ -116,7 +124,12 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 		//printf("block_size = %d\n", block_size);
 
 		complex_t Y_k,Z_k,W;
-		complex_t temp;
+		//complex_t temp;
+		int temp_re;
+		int temp_im;
+		int temp1;
+		int temp2;
+
 		complex_t* out;
 		for(segment = 0; segment < num_blocks; ++segment){		
 			out = output + segment*block_size;
@@ -126,23 +139,35 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 			for( i = 0; i< block_size/2; ++i){
 				//int poo = segment*block_size;
 				//printf("\t\t %d,%d\n", i  + poo, i + block_size/2 + poo);
-
+			
 				Y_k = out[i];
 				Z_k = out[i +block_size/2];	
 
 				//W = twiddle(block_size, i);
 				//printf("\t\t%d\n",(n/block_size)*i);
 				W = context->twiddles[(n/block_size)*i];
+				//printf("\t\t W[%d]=%f,%f\n",(n/block_size)*i,unscale32i(W.re,30),unscale32i(W.im,30));				
 
 				// complex_multiplication
-				temp.re = W.re*Z_k.re - W.im*Z_k.im;
-				temp.im = W.im*Z_k.re + W.re*Z_k.im;			
+				// W = 2^30 both are signed
+				// Z = 2^20 both are signed
+				temp1 = ((long long int)W.re*Z_k.re) >> 32; // scaling factor 2^50 --> 2^18
+				temp2 = ((long long int)W.im*Z_k.im) >> 32; // scaling factor 2^50 --> 2^18
+				temp_re = temp1 - temp2; // scaling factor 2^18
 				
-				out[i].re = Y_k.re + temp.re;
-				out[i].im = Y_k.im + temp.im;
-
-				out[i + block_size/2].re = Y_k.re - temp.re;
-				out[i + block_size/2].im = Y_k.im - temp.im;
+				temp1 = ((long long int)W.im*Z_k.re) >> 32; // scaling factor 2^50- --> 2^18
+				temp2 = ((long long int)W.re*Z_k.im) >> 32; // scaling factor 2^50- --> 2^18
+				temp_im = temp1 + temp2; // scaling factor 2^18
+				//printf("\t\t temp = %f %f\n",unscale32i(temp_re,18),unscale32i(temp_im,18));				
+				
+				// place into output buffer
+				out[i].re = (Y_k.re) + (temp_re << 2); // Y_k = 2^20, temp_re = 2^18 -> 2^20
+				out[i].im = (Y_k.im) + (temp_im << 2); // Y_k = 2^20, temp_im = 2^18 -> 2^20
+				//printf("\t\t out[%d] = %f %f\n",i,unscale32i(out[i].re,20),unscale32i(out[i].im,20));
+				
+				out[i + block_size/2].re = (Y_k.re) - (temp_re << 2); // Y_k = 2^20, temp_re = 2^18 -> 2^20
+				out[i + block_size/2].im = (Y_k.im) - (temp_im << 2); // Y_k = 2^20, temp_im = 2^18 -> 2^20
+				//printf("\t\t out[%d] = %f %f\n",i + block_size/2, unscale32i(out[i + block_size/2].re,20),unscale32i(out[i + block_size/2].im,20));
 			}
 		}
 		block_size *= 2;

@@ -32,6 +32,9 @@ fft6.c
 
 fft7.c
 	Floating point to fixed point arithmetic.
+	we have a max size of 2^20 input size.
+	therefore we can split into 20 decimal and 12 fractional
+	
 
 
 testbench/

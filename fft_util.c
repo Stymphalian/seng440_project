@@ -19,6 +19,18 @@ unsigned Microseconds(void){
 #endif
 }
 
+int scale32i(float original_value, int scale){
+	int rs = ( original_value * ( 1<< scale));
+	if(scale != 31 && original_value == (1 << (32 - scale -1) ) ) {		
+		printf("\t\twhy?\n");
+		rs -= 1;
+	}
+	return rs;
+}
+float unscale32i(int scaled_value, int scale){
+	return scaled_value/ (float)(1 << scale);	
+}
+
 void print_spaces(int n){
 	if( n == 1) {return;}
 	int i = 0;
@@ -28,8 +40,8 @@ void print_spaces(int n){
 }
 
 void print_complex(complex_t c){
-	printf("%.20f %.20f\n", c.re, c.im);
-	//printf("%u %u\n", c.re, c.im);
+	//printf("%.20f %.20f\n", c.re, c.im);
+	printf("%u %u\n", c.re, c.im);
 }
 void print_complex_array(complex_t* c, int n){
 	unsigned i ;
