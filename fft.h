@@ -16,7 +16,6 @@ struct complex_t{
 // all these methods are implemented in jordan_fft_util.h
 unsigned Microseconds(void);
 
-
 int scale32i(float original_value, int scale);
 float unscale32i(int scaled_value, int scale);
 

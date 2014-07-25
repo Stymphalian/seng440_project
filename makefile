@@ -1,8 +1,7 @@
 CC=gcc
 CTYPE=c
-CFLAGS=-c -Wall
-#CFLAGS=-c -Wall -DFIXED_POINT
-#CFLAGS=-c -Wall -DTIME_TEST
+CFLAGS=-c -Wall -DFIXED_POINT
+#CFLAGS=-c -Wall -DTIME_TEST -DFIXED_POINT
 INFLAGS=-Iinclude 
 LDFLAGS=-L. -lm
 #LDFLAGS=-L. -lm -lrt
