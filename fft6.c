@@ -135,8 +135,10 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 				printf("\t\t W[%d]=%f,%f\n",(n/block_size)*i,W.re,W.im);
 
 				// complex_multiplication
-				temp.re = W.re*Z_k.re - W.im*Z_k.im;
+				temp.re = W.re*Z_k.re - W.im*Z_k.im;				
 				temp.im = W.im*Z_k.re + W.re*Z_k.im;
+				printf("\t\t temp_re before = %f %f\n",W.re*Z_k.re,W.im*Z_k.im);
+				printf("\t\t temp_im before = %f %f\n",W.im*Z_k.re,W.re*Z_k.im);
 				printf("\t\t temp = %f %f\n",temp.re,temp.im);
 				
 				out[i].re = Y_k.re + temp.re;

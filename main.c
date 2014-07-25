@@ -191,10 +191,13 @@ int main(int argc, char** argv){
 		// signed: 1b
 		// -2048....2048: 2^11
 		// scale factor: 2^20
+		#ifdef FIXED_POINT
 		input[i].re = scale32i(re,20);
 		input[i].im = scale32i(im,20);		
-		//input[i].re = re;
-		//input[i].im = im;
+		#else
+		input[i].re = re;
+		input[i].im = im;
+		#endif
 		//printf("%d %d\n", input[i].re, input[i].im);		
 	}
 
@@ -211,10 +214,13 @@ int main(int argc, char** argv){
 		// bit len: 32b
 		// signed : 1b 
 		// scale factor: 20 b
+		#ifdef FIXED_POINT
 		float re = unscale32i(output[i].re,20);
 		float im = unscale32i(output[i].im,20);		
-		//float re = output[i].re;
-		//float im = output[i].im;
+		#else
+		float re = output[i].re;
+		float im = output[i].im;
+		#endif
 		printf("%f %f\n",re,im);
 	}
 	//print_complex_array(output,number_samples);

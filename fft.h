@@ -3,10 +3,13 @@
 
 typedef struct complex_t complex_t;
 struct complex_t{
+	#ifdef FIXED_POINT
 	int re;
 	int im;
-	//float re;
-	//float im;
+	#else
+	float re;
+	float im;
+	#endif
 };
 
 

@@ -21,14 +21,13 @@ unsigned Microseconds(void){
 
 int scale32i(float original_value, int scale){
 	int rs = ( original_value * ( 1<< scale));
-	if(scale != 31 && original_value == (1 << (32 - scale -1) ) ) {		
-		printf("\t\twhy?\n");
+	if(original_value == (1 << (32 - scale -1) ) ) {				
 		rs -= 1;
 	}
 	return rs;
 }
-float unscale32i(int scaled_value, int scale){
-	return scaled_value/ (float)(1 << scale);	
+float unscale32i(int scaled_value,int scale){
+	return scaled_value / (float)(1 << scale);	
 }
 
 void print_spaces(int n){
@@ -40,8 +39,11 @@ void print_spaces(int n){
 }
 
 void print_complex(complex_t c){
-	//printf("%.20f %.20f\n", c.re, c.im);
-	printf("%u %u\n", c.re, c.im);
+	#ifdef FIXED_POINT
+	printf("%u %u\n", c.re, c.im);	
+	#else
+	printf("%.20f %.20f\n", c.re, c.im);
+	#endif
 }
 void print_complex_array(complex_t* c, int n){
 	unsigned i ;
@@ -90,10 +92,13 @@ int inverse_fft(complex_t* input, complex_t* output, unsigned int n){
 	int i = 0;
 	swap_complex_array(output,n);
 	for( i = 0; i < n; ++i){
-		//output[i].re /= n;
-		//output[i].im /= n;
+		#ifdef FIXED_POINT
 		output[i].re = scale32i(unscale32i(output[i].re,20)/n,20);
-		output[i].im = scale32i(unscale32i(output[i].im,20)/n,20);
+		output[i].im = scale32i(unscale32i(output[i].im,20)/n,20);		
+		#else
+		output[i].re /= n;
+		output[i].im /= n;		
+		#endif
 	}
 	return rs;
 }

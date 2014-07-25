@@ -151,23 +151,25 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 				// complex_multiplication
 				// W = 2^30 both are signed
 				// Z = 2^20 both are signed
-				temp1 = ((long long int)W.re*Z_k.re) >> 32; // scaling factor 2^50 --> 2^18
-				temp2 = ((long long int)W.im*Z_k.im) >> 32; // scaling factor 2^50 --> 2^18
+				temp1 = ((long long int)W.re*Z_k.re >> 32); // scaling factor 2^50 --> 2^18
+				temp2 = ((long long int)W.im*Z_k.im >> 32); // scaling factor 2^50 --> 2^18
+				// printf("\t\t temp_re before = %f %f\n",unscale32i(temp1,18),unscale32i(temp2,18));
 				temp_re = temp1 - temp2; // scaling factor 2^18
 				
-				temp1 = ((long long int)W.im*Z_k.re) >> 32; // scaling factor 2^50- --> 2^18
-				temp2 = ((long long int)W.re*Z_k.im) >> 32; // scaling factor 2^50- --> 2^18
+				temp1 = ((long long int)W.im*Z_k.re >> 32); // scaling factor 2^50- --> 2^18
+				temp2 = ((long long int)W.re*Z_k.im >> 32); // scaling factor 2^50- --> 2^18
 				temp_im = temp1 + temp2; // scaling factor 2^18
-				// printf("\t\t temp = %f %f\n",unscale32i(temp_re,18),unscale32i(temp_im,18));				
+				//printf("\t\t temp_im before = %f %f\n",unscale32i(temp1,18),unscale32i(temp2,18));
+				//printf("\t\t temp = %f %f\n",unscale32i(temp_re,18),unscale32i(temp_im,18));				
 				
 				// place into output buffer
 				out[i].re = (Y_k.re) + (temp_re << 2); // Y_k = 2^20, temp_re = 2^18 -> 2^20
 				out[i].im = (Y_k.im) + (temp_im << 2); // Y_k = 2^20, temp_im = 2^18 -> 2^20
-				// printf("\t\t out[%d] = %f %f\n",i,unscale32i(out[i].re,20),unscale32i(out[i].im,20));
+				//printf("\t\t out[%d] = %f %f\n",i,unscale32i(out[i].re,20),unscale32i(out[i].im,20));
 				
 				out[i + block_size/2].re = (Y_k.re) - (temp_re << 2); // Y_k = 2^20, temp_re = 2^18 -> 2^20
 				out[i + block_size/2].im = (Y_k.im) - (temp_im << 2); // Y_k = 2^20, temp_im = 2^18 -> 2^20
-				// printf("\t\t out[%d] = %f %f\n",i + block_size/2, unscale32i(out[i + block_size/2].re,20),unscale32i(out[i + block_size/2].im,20));
+				//printf("\t\t out[%d] = %f %f\n",i + block_size/2, unscale32i(out[i + block_size/2].re,20),unscale32i(out[i + block_size/2].im,20));
 			}
 		}
 		block_size *= 2;
