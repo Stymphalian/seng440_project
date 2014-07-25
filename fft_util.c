@@ -21,7 +21,8 @@ unsigned Microseconds(void){
 
 int scale32i(float original_value, int scale){
 	int rs = ( original_value * ( 1<< scale));
-	if(original_value == (1 << (32 - scale -1) ) ) {				
+	//int rs = (int)( original_value << scale));
+	if( original_value == (1 << (32 - scale -1) ) ) {				
 		rs -= 1;
 	}
 	return rs;

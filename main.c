@@ -28,6 +28,11 @@ void baz(){
 
 void bar(){	
 
+	int a = 580;
+	printf("a = %d\n",a);
+	printf("a shift =%d\n", (int)(580 << 4) );
+	printf("a shift =%d\n", (int)(580.0 * (1<< 4)) );
+
 	float fYk_re = 0.5;
 	float fYk_im = -1.0;
 	float fZk_re = 1.25;
@@ -221,7 +226,7 @@ int main(int argc, char** argv){
 		float re = output[i].re;
 		float im = output[i].im;
 		#endif
-		printf("%f %f\n",re,im);
+		//printf("%f %f\n",re,im);
 	}
 	//print_complex_array(output,number_samples);
 #else

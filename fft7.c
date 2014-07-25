@@ -27,14 +27,16 @@ struct fft_t{
 // I use a scale factor of 2^30 because there is some weird behaviour when it is 31
 static complex_t twiddle(unsigned N, unsigned k){
 	complex_t rs;
-	double re,im;
-	re = cos((2*M_PI*k)/N);
-	im = -sin((2*M_PI*k)/N);
-	
+	//double re,im;
+	float re = cos((2*M_PI*k)/N);
+	float im = -sin((2*M_PI*k)/N);			
+	rs.re = re * (1 << 30);
+	rs.im = im * (1 << 30);
+	//rs.re = scale32i(re,30);
+	//rs.im = scale32i(im,30);
 	//printf("N=%d,k=%d === (%f,%f)\n",N,k, rs.re, rs.im);	
 	//printf("N=%d,k=%d === (%f,%f -> %d,%d)\n",N,k, re, im, rs.re, rs.im);	
-	rs.re = scale32i(re,30);
-	rs.im = scale32i(im,30);
+	
 	return rs;	
 
 }
@@ -112,36 +114,35 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 	unsigned level = 0;
 	unsigned num_levels = bit_len32(n);
 	unsigned block_size = 2;
+	unsigned num_blocks = 0;
+	unsigned segment = 0;
+	complex_t Y_k,Z_k,W;		
+	int temp_re,temp_im;
+	complex_t* out;
+	unsigned i;
 
 	// num_levels -1 because we don't need to worry about block_size = 1 case.
 	// It is already handled by the jig_input().
 	for( level = num_levels-1; level != 0 ; --level){
 
-		unsigned num_blocks = n / block_size;
-		unsigned segment = 0;
+		num_blocks = n / block_size;
+		segment = 0;
 		// printf("level %d\n", level);
 		// printf("num_blocks = %d\n", num_blocks);
 		// printf("block_size = %d\n", block_size);
 
-		complex_t Y_k,Z_k,W;
-		//complex_t temp;
-		int temp_re;
-		int temp_im;
-		int temp1;
-		int temp2;
-
-		complex_t* out;
+		
 		for(segment = 0; segment < num_blocks; ++segment){		
 			out = output + segment*block_size;
 			// printf("\t segment %d, abs_pos = %d\n", segment, segment*block_size);
+			
 
-			unsigned i = 0;
-			for( i = 0; i< block_size/2; ++i){
+			for( i = 0; i< (block_size >> 1); ++i){
 				//int poo = segment*block_size;
 				//printf("\t\t %d,%d\n", i  + poo, i + block_size/2 + poo);
 			
 				Y_k = out[i];
-				Z_k = out[i +block_size/2];	
+				Z_k = out[i + (block_size >> 1)];	
 
 				//W = twiddle(block_size, i);
 				//printf("\t\t%d\n",(n/block_size)*i);
@@ -151,24 +152,22 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 				// complex_multiplication
 				// W = 2^30 both are signed
 				// Z = 2^20 both are signed
-				temp1 = ((long long int)W.re*Z_k.re >> 32); // scaling factor 2^50 --> 2^18
-				temp2 = ((long long int)W.im*Z_k.im >> 32); // scaling factor 2^50 --> 2^18
 				// printf("\t\t temp_re before = %f %f\n",unscale32i(temp1,18),unscale32i(temp2,18));
-				temp_re = temp1 - temp2; // scaling factor 2^18
-				
-				temp1 = ((long long int)W.im*Z_k.re >> 32); // scaling factor 2^50- --> 2^18
-				temp2 = ((long long int)W.re*Z_k.im >> 32); // scaling factor 2^50- --> 2^18
-				temp_im = temp1 + temp2; // scaling factor 2^18
+				// scaling factor 2^50- --> 2^18
+				temp_re = ((long long int)W.re*Z_k.re >> 32) - ((long long int)W.im*Z_k.im >> 32);
+
 				//printf("\t\t temp_im before = %f %f\n",unscale32i(temp1,18),unscale32i(temp2,18));
 				//printf("\t\t temp = %f %f\n",unscale32i(temp_re,18),unscale32i(temp_im,18));				
+				// scaling factor 2^50- --> 2^18
+				temp_im = ((long long int)W.im*Z_k.re >> 32) + ((long long int)W.re*Z_k.im >> 32);
 				
 				// place into output buffer
 				out[i].re = (Y_k.re) + (temp_re << 2); // Y_k = 2^20, temp_re = 2^18 -> 2^20
 				out[i].im = (Y_k.im) + (temp_im << 2); // Y_k = 2^20, temp_im = 2^18 -> 2^20
 				//printf("\t\t out[%d] = %f %f\n",i,unscale32i(out[i].re,20),unscale32i(out[i].im,20));
 				
-				out[i + block_size/2].re = (Y_k.re) - (temp_re << 2); // Y_k = 2^20, temp_re = 2^18 -> 2^20
-				out[i + block_size/2].im = (Y_k.im) - (temp_im << 2); // Y_k = 2^20, temp_im = 2^18 -> 2^20
+				out[i + (block_size >> 1)].re = (Y_k.re) - (temp_re << 2); // Y_k = 2^20, temp_re = 2^18 -> 2^20
+				out[i + (block_size >> 1)].im = (Y_k.im) - (temp_im << 2); // Y_k = 2^20, temp_im = 2^18 -> 2^20
 				//printf("\t\t out[%d] = %f %f\n",i + block_size/2, unscale32i(out[i + block_size/2].re,20),unscale32i(out[i + block_size/2].im,20));
 			}
 		}
