@@ -21,7 +21,6 @@ unsigned Microseconds(void){
 
 int scale32i(float original_value, int scale){
 	int rs = ( original_value * ( 1<< scale));
-	//int rs = (int)( original_value << scale));
 	if( original_value == (1 << (32 - scale -1) ) ) {				
 		rs -= 1;
 	}
@@ -57,7 +56,11 @@ void print_complex_array(complex_t* c, int n){
 // their real and imaginary components.
 void swap_complex_array(complex_t* c,int n){
 	int i ;
+	#ifdef FIXED_POINT	
+	int temp;
+	#else
 	float temp;
+	#endif
 	for( i = 0;i < n; ++i){
 		temp = c[i].re;
 		c[i].re = c[i].im;
