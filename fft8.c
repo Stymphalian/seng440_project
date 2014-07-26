@@ -191,8 +191,8 @@ void _fft2(fft_t* context,complex_t* output,unsigned n){
 
 			for( i = 0; i< (block_size >> 1); ++i){
 				//Y_k = out[i];
-				Y_k = output[i];
-				Z_k = output[i + (block_size >> 1)];	
+				Y_k = out[i];
+				Z_k = out[i + (block_size >> 1)];	
 				
 				// W = 2^16 b signed
 				W = context->twiddles[(n >> level)*i];				

@@ -33,9 +33,18 @@ fft6.c
 fft7.c
 	Floating point to fixed point arithmetic.
 	Max sample size of 2^17
-	input samples: 11b decimal, 20 fractional, 1 sign bit
-	twiddle factors: 1b decimal, 29 fractional, 1 sign bit	
+	input samples: 15b decimal, 16 fractional, 1 sign bit
+	twiddle factors: 1b decimal, 30 fractional, 1 sign bit	
 	Performance descrese: 0.972271208 speedown
+
+fft8.c
+	Reworked fixed-point arithmetic.
+	Micro-optimizations in the main _fft2 loop.
+	i.e 
+		divisions,multiplications into bit-shifts)
+		inline of the bit-reverals function inside the jig_input function.
+	Performance increase: 1.070503415 speedup
+
 
 
 testbench/
@@ -77,4 +86,5 @@ FUTURE IMPROVEMENTS:
 1. Memory thrasing.When performing the butterfly, the indices of each half of the butter fly 
 are N/2 away from each other. Given that N can be quite large, this will probably incur
 cache misses,thereby killig our performance.
-2. Very large error rates for forward transform.
+2. Very large error rates for forward transform for sample sizes > 65536
+3. Create look-up tables for cos and sin values.
