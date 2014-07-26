@@ -162,7 +162,8 @@ static void destroy_context(fft_t* context){
 // @precond:
 //		context is not null
 //		output is not null
-// 	n is a power of two
+// 	n is a power of two. 
+//		n < 2^17
 // @side-effects:
 //		Calculates the fft and places the reult into the 'output' buffer.
 void _fft2(fft_t* context,complex_t* output,unsigned n){	
@@ -171,15 +172,16 @@ void _fft2(fft_t* context,complex_t* output,unsigned n){
 	unsigned block_size = 2;				// starting block_size is 2	
 	unsigned num_blocks = 0;				// keep track of how many blocks are on this level
 	unsigned segment = 0;					// loop counter, used to identify the paritcular segment out of all the blocks currently being processed
+	complex_t * out;							// temporary pointer to the output buffer. used to reduce number of bit-shifts + additions.
 	complex_t Y_k;								// Keep a copy of Y_k
 	complex_t Z_k;								// pointer to the Z_k portion of the butterfly
 	complex_t W;								// pointer to the twiddle factor
 	int temp_re,temp_im;						// temp var to hold Z_k*W
 	unsigned i;									// loop counter
 
-	// num_levels -1 because we don't need to worry about block_size = 1 case.
-	// It is already handled by the jig_input().
-	//for( level = num_levels-1; level != 0 ; --level){
+
+	// block-size == 1 is already handled by the jig-input from the
+	// fft_context initialization.
 	for( level = 1; level <= num_levels; ++level){
 		num_blocks = n >> level;
 		segment = 0;		
@@ -187,14 +189,13 @@ void _fft2(fft_t* context,complex_t* output,unsigned n){
 		for(segment = 0; segment < num_blocks; ++segment){		
 			out = output + (segment<< level);
 
-			for( i = 0; i< (block_size >> 1); ++i){			
+			for( i = 0; i< (block_size >> 1); ++i){
 				//Y_k = out[i];
 				Y_k = output[i];
 				Z_k = output[i + (block_size >> 1)];	
 				
 				// W = 2^16 b signed
 				W = context->twiddles[(n >> level)*i];				
-
 				
 				// complex_multiplication
 				// Z = 2^16 signed
@@ -203,12 +204,12 @@ void _fft2(fft_t* context,complex_t* output,unsigned n){
 				temp_im = ((long long int)W.im*Z_k.re >> 30) + ((long long int)W.re*Z_k.im >> 30);				
 
 				
-				// place into output buffer
+				// place into output buffer.
 				// out = 2^16  + 2^16 -> 2^16
 				out[i].re = (Y_k.re) + (temp_re); // Y_k = 2^16, temp_re = 2^16 -> 2^16
 				out[i].im = (Y_k.im) + (temp_im); // Y_k = 2^16, temp_im = 2^16 -> 2^16
 				
-				// Z_k is just a pointer to the appropriate out section.
+				// place into output buffer.
 				out[i + (block_size >>1 )].re = (Y_k.re) - (temp_re); // Y_k = 2^16, temp_re = 2^16 -> 2^16
 				out[i + (block_size >>1 )].im = (Y_k.im) - (temp_im); // Y_k = 2^16, temp_im = 2^16 -> 2^16
 			}
