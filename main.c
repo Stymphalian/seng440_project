@@ -106,8 +106,8 @@ int main(int argc, char** argv){
 }
 
 void foo(){
-	float a = 0.5;
-	float b = 0.0000008;
+	float a = 0.00001198422;
+	float b = 0.0;
 	float c = a*b;
 
 	int int_a = scale32i(a,20);
@@ -130,6 +130,5 @@ void foo(){
 	printf("rs_b = %f\n", rs_b);
 	printf("rs_c = %f\n", rs_c);
 	
-
 	exit(0);
 }
