@@ -7,7 +7,7 @@ LDFLAGS=-L. -lm
 #LDFLAGS=-L. -lm -lrt
 
 OBJDIR:=objdir
-SOURCES=main.$(CTYPE) fft7.$(CTYPE) fft_util.$(CTYPE)
+SOURCES=main.$(CTYPE) fft8.$(CTYPE) fft_util.$(CTYPE)
 OBJECTS=$(addprefix $(OBJDIR)/, $(SOURCES:.$(CTYPE)=.o) )
 
 EXECUTABLE=noin
