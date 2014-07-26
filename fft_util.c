@@ -40,7 +40,9 @@ void print_spaces(int n){
 
 void print_complex(complex_t c){
 	#ifdef FIXED_POINT
-	printf("%u %u\n", c.re, c.im);	
+	printf("%d %d\n", c.re, c.im);	
+	#elif SHORT_FIXED_POINT
+	printf("%d %d\n", c.re, c.im);	
 	#else
 	printf("%.20f %.20f\n", c.re, c.im);
 	#endif
@@ -98,7 +100,10 @@ int inverse_fft(complex_t* input, complex_t* output, unsigned int n){
 	for( i = 0; i < n; ++i){
 		#ifdef FIXED_POINT
 		output[i].re = scale32i(unscale32i(output[i].re,20)/n,20);
-		output[i].im = scale32i(unscale32i(output[i].im,20)/n,20);		
+		output[i].im = scale32i(unscale32i(output[i].im,20)/n,20);
+		#elif SHORT_FIXED_POINT
+		output[i].re = scale16i(unscale16i(output[i].re,20)/n,20);
+		output[i].im = scale16i(unscale16i(output[i].im,20)/n,20);
 		#else
 		output[i].re /= n;
 		output[i].im /= n;		
