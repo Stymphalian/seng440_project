@@ -147,19 +147,21 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 				
 				// complex_multiplication
 				// Z = 2^20 signed
-				// scaling factor 2^50- --> 2^18
-				temp_re = ((long long int)W.re*Z_k.re >> 36) - ((long long int)W.im*Z_k.im >> 36)
-				temp_im = ((long long int)W.im*Z_k.re >> 36) + ((long long int)W.re*Z_k.im >> 36);
+				// scaling factor 2^50- --> 2^16 --> 2^20
+				// 50 - 30 = 20				
+				temp_re = ((long long int)W.re*Z_k.re >> 34) - ((long long int)W.im*Z_k.im >> 34);
+				temp_im = ((long long int)W.im*Z_k.re >> 34) + ((long long int)W.re*Z_k.im >> 34);
 				temp_re = temp_re << 4;
-				temp_re = temp_re << 4;
+				temp_im = temp_im << 4;
 
 				
 				// place into output buffer
-				out[i].re = (Y_k.re >> 2) + (temp_re); // Y_k = 2^20, temp_re = 2^18 -> 2^20
-				out[i].im = (Y_k.im >> 2) + (temp_im); // Y_k = 2^20, temp_im = 2^18 -> 2^20				
+				// Y_k = 2^20 -> 2^18
+				out[i].re = (Y_k.re) + (temp_re); // Y_k = 2^20, temp_re = 2^18 -> 2^20
+				out[i].im = (Y_k.im) + (temp_im); // Y_k = 2^20, temp_im = 2^18 -> 2^20				
 				
-				out[i + (block_size >> 1)].re = (Y_k.re >> 2) - (temp_re); // Y_k = 2^20, temp_re = 2^18 -> 2^20
-				out[i + (block_size >> 1)].im = (Y_k.im >> 2) - (temp_im); // Y_k = 2^20, temp_im = 2^18 -> 2^20				
+				out[i + (block_size >> 1)].re = (Y_k.re) - (temp_re); // Y_k = 2^20, temp_re = 2^18 -> 2^20
+				out[i + (block_size >> 1)].im = (Y_k.im) - (temp_im); // Y_k = 2^20, temp_im = 2^18 -> 2^20				
 			}
 		}
 		block_size *= 2;

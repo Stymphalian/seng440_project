@@ -67,7 +67,10 @@ int main(int argc, char** argv){
 		float re = output[i].re;
 		float im = output[i].im;
 		#endif
-		//printf("%f %f\n",re,im);
+
+		#ifdef PRINT_OUUTPUT
+		printf("%f %f\n",re,im);
+		#endif
 	}
 	//print_complex_array(output,number_samples);
 #else
