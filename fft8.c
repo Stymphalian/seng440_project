@@ -136,10 +136,11 @@ static int init_context(fft_t* context,complex_t* input, complex_t* output, unsi
 	if( context->twiddles == NULL){
 		return 0;
 	}
-	int i = 0;
+
 	// We only need to calculate n/2 twiddles
 	// because the butterfly at the highest level only uses
 	// up to the n/2 th twiddle factor.
+	int i = 0;
 	for( i = 0;i < n/2; ++i){
 		context->twiddles[i] = twiddle(n,i);
 	}
@@ -171,8 +172,8 @@ void _fft2(fft_t* context,complex_t* output,unsigned n){
 	unsigned num_blocks = 0;				// keep track of how many blocks are on this level
 	unsigned segment = 0;					// loop counter, used to identify the paritcular segment out of all the blocks currently being processed
 	complex_t Y_k;								// Keep a copy of Y_k
-	complex_t *Z_k;							// pointer to the Z_k portion of the butterfly
-	complex_t *W;								// pointer to the twiddle factor
+	complex_t Z_k;								// pointer to the Z_k portion of the butterfly
+	complex_t W;								// pointer to the twiddle factor
 	int temp_re,temp_im;						// temp var to hold Z_k*W
 	unsigned i;									// loop counter
 
@@ -184,32 +185,32 @@ void _fft2(fft_t* context,complex_t* output,unsigned n){
 		segment = 0;		
 		
 		for(segment = 0; segment < num_blocks; ++segment){		
-			//out = output + (segment<< level);
+			out = output + (segment<< level);
 
 			for( i = 0; i< (block_size >> 1); ++i){			
 				//Y_k = out[i];
-				Y_k = output[(segment<< level) + i];
-				Z_k = &output[(segment<< level) + i + (block_size >> 1)];	
+				Y_k = output[i];
+				Z_k = output[i + (block_size >> 1)];	
 				
 				// W = 2^16 b signed
-				W = &context->twiddles[(n >> level)*i];				
+				W = context->twiddles[(n >> level)*i];				
 
 				
 				// complex_multiplication
 				// Z = 2^16 signed
 				// scaling factor 2^16 * 2^30 --> 2^46 --> 2^16
-				temp_re = ((long long int)W->re*Z_k->re >> 30) - ((long long int)W->im*Z_k->im >> 30);
-				temp_im = ((long long int)W->im*Z_k->re >> 30) + ((long long int)W->re*Z_k->im >> 30);				
+				temp_re = ((long long int)W.re*Z_k.re >> 30) - ((long long int)W.im*Z_k.im >> 30);
+				temp_im = ((long long int)W.im*Z_k.re >> 30) + ((long long int)W.re*Z_k.im >> 30);				
 
 				
 				// place into output buffer
 				// out = 2^16  + 2^16 -> 2^16
-				output[(segment<< level) + i].re = (Y_k.re) + (temp_re); // Y_k = 2^16, temp_re = 2^16 -> 2^16
-				output[(segment<< level) + i].im = (Y_k.im) + (temp_im); // Y_k = 2^16, temp_im = 2^16 -> 2^16
+				out[i].re = (Y_k.re) + (temp_re); // Y_k = 2^16, temp_re = 2^16 -> 2^16
+				out[i].im = (Y_k.im) + (temp_im); // Y_k = 2^16, temp_im = 2^16 -> 2^16
 				
 				// Z_k is just a pointer to the appropriate out section.
-				Z_k->re = (Y_k.re) - (temp_re); // Y_k = 2^16, temp_re = 2^16 -> 2^16
-				Z_k->im = (Y_k.im) - (temp_im); // Y_k = 2^16, temp_im = 2^16 -> 2^16
+				out[i + (block_size >>1 )].re = (Y_k.re) - (temp_re); // Y_k = 2^16, temp_re = 2^16 -> 2^16
+				out[i + (block_size >>1 )].im = (Y_k.im) - (temp_im); // Y_k = 2^16, temp_im = 2^16 -> 2^16
 			}
 		}
 		block_size  = block_size << 1;		
