@@ -74,7 +74,7 @@ static int _fft_run(complex_t* output, int n){
 	return 1;
 }
 
-int _fft(complex_t* input, complex_t* output, int n){
+int _fft(complex_t* input, complex_t* output, unsigned n){
 	jig_input(input,output,n);	
 	_fft_run(output, n);
 	return 0;

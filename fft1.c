@@ -58,6 +58,6 @@ static int _fft_run(complex_t* input, complex_t* output, int n, int step, int of
 	return 1;
 }
 
-int _fft(complex_t* input, complex_t* output, int n){
+int _fft(complex_t* input, complex_t* output, unsigned n){
 	return  _fft_run(input, output, n, 1, 0);
 }

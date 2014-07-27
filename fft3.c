@@ -44,7 +44,7 @@ static void jig_input(complex_t* input, complex_t* output, int n){
 	}	
 }
 
-int _fft(complex_t* input, complex_t* output, int n){
+int _fft(complex_t* input, complex_t* output, unsigned n){
 	jig_input(input,output,n);
 
 	int level = 0;

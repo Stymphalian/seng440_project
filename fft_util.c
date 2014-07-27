@@ -99,8 +99,8 @@ int inverse_fft(complex_t* input, complex_t* output, unsigned int n){
 	swap_complex_array(output,n);
 	for( i = 0; i < n; ++i){
 		#ifdef FIXED_POINT
-		output[i].re = scale32i(unscale32i(output[i].re,20)/n,20);
-		output[i].im = scale32i(unscale32i(output[i].im,20)/n,20);
+		output[i].re = scale32i(unscale32i(output[i].re,16)/n,16);
+		output[i].im = scale32i(unscale32i(output[i].im,16)/n,16);
 		#elif SHORT_FIXED_POINT
 		output[i].re = scale16i(unscale16i(output[i].re,20)/n,20);
 		output[i].im = scale16i(unscale16i(output[i].im,20)/n,20);

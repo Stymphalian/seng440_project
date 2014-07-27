@@ -143,7 +143,7 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 	return 1;
 }
 
-int _fft(complex_t* input, complex_t* output, int n){
+int _fft(complex_t* input, complex_t* output, unsigned n){
 	int rs = 0;
 	fft_t context;
 	init_context(&context, input, output, n);
