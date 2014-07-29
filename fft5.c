@@ -107,26 +107,18 @@ int _fft2(fft_t* context,complex_t* output,unsigned n){
 
 		int num_blocks = n / block_size;
 		int segment = 0;
-		//printf("level %d\n", level);
-		//printf("num_blocks = %d\n", num_blocks);
-		//printf("block_size = %d\n", block_size);
 
 		complex_t Y_k,Z_k,W;
 		complex_t* out;
 		for(segment = 0; segment < num_blocks; ++segment){		
-			out = output + segment*block_size;
-			//printf("\t segment %d, abs_pos = %d\n", segment, segment*block_size);
+			out = output + segment*block_size;			
 
 			int i = 0;
-			for( i = 0; i< block_size/2; ++i){
-				//int poo = segment*block_size;
-				//printf("\t\t %d,%d\n", i  + poo, i + block_size/2 + poo);
+			for( i = 0; i< block_size/2; ++i){				
 
 				Y_k = out[i];
 				Z_k = out[i +block_size/2];	
-
-				//W = twiddle(block_size, i);
-				//printf("\t\t%d\n",(n/block_size)*i);
+				
 				W = context->twiddles[(n/block_size)*i];
 				complex_t temp;
 				complex_mult(&W,&Z_k,&temp);

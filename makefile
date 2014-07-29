@@ -1,10 +1,17 @@
 CC=gcc
 CTYPE=c
-CFLAGS=-c -Wall -DPRINT_OUTPUT -DFIXED_POINT
+
+# For fft7+, you must compile with -DFIXED_POINT
 #CFLAGS=-c -Wall -DTIME_TEST -DFIXED_POINT -DPRINT_OUTPUT
+CFLAGS=-c -Wall -DPRINT_OUTPUT -DFIXED_POINT
+
+
 INFLAGS=-Iinclude 
-LDFLAGS=-L. -lm 
+
+# -lrt is needed for timing libraries on linux machines
 #LDFLAGS=-L. -lm -lrt
+LDFLAGS=-L. -lm 
+
 
 OBJDIR:=objdir
 SOURCES=main.$(CTYPE) fft8.$(CTYPE) fft_util.$(CTYPE)
@@ -16,7 +23,6 @@ EXECUTABLE=noin
 # -E  amcro expanded
 # -pg
 # -S
-
 
 all: $(SOURCES) $(EXECUTABLE)
 

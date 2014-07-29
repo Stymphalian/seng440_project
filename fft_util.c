@@ -19,6 +19,8 @@ unsigned Microseconds(void){
 #endif
 }
 
+
+// Function used to scale a float value to a 32b int fixed-point number
 int scale32i(float original_value, int scale){
 	int rs = ( original_value * ( 1<< scale));
 	if( original_value == (1 << (32 - scale -1) ) ) {				
@@ -26,6 +28,8 @@ int scale32i(float original_value, int scale){
 	}
 	return rs;
 }
+// Function used to unscale a 32b int scaled value back to a floating
+// point value.
 float unscale32i(int scaled_value,int scale){
 	return scaled_value / (float)(1 << scale);	
 }
@@ -40,9 +44,7 @@ void print_spaces(int n){
 
 void print_complex(complex_t c){
 	#ifdef FIXED_POINT
-	printf("%d %d\n", c.re, c.im);	
-	#elif SHORT_FIXED_POINT
-	printf("%d %d\n", c.re, c.im);	
+	printf("%d %d\n", c.re, c.im);		
 	#else
 	printf("%.20f %.20f\n", c.re, c.im);
 	#endif
@@ -100,10 +102,7 @@ int inverse_fft(complex_t* input, complex_t* output, unsigned int n){
 	for( i = 0; i < n; ++i){
 		#ifdef FIXED_POINT
 		output[i].re = scale32i(unscale32i(output[i].re,16)/n,16);
-		output[i].im = scale32i(unscale32i(output[i].im,16)/n,16);
-		#elif SHORT_FIXED_POINT
-		output[i].re = scale16i(unscale16i(output[i].re,20)/n,20);
-		output[i].im = scale16i(unscale16i(output[i].im,20)/n,20);
+		output[i].im = scale32i(unscale32i(output[i].im,16)/n,16);		
 		#else
 		output[i].re /= n;
 		output[i].im /= n;		

@@ -13,9 +13,6 @@ struct complex_t{
 	#ifdef FIXED_POINT
 	int re;
 	int im;
-	#elif SHORT_FIXED_POINT
-	short re;
-	short im;
 	#else
 	float re;
 	float im;

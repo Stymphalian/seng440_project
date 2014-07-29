@@ -39,15 +39,11 @@ int main(int argc, char** argv){
 		// scale factor: 2^16
 		#ifdef FIXED_POINT
 		input[i].re = scale32i(re,16);
-		input[i].im = scale32i(im,16);		
-		#elif SHORT_FIXED_POINT
-		input[i].re = scale16i(re,10);
-		input[i].im = scale16i(im,10);		
+		input[i].im = scale32i(im,16);				
 		#else
 		input[i].re = re;
 		input[i].im = im;
-		#endif
-		//printf("%d %d\n", input[i].re, input[i].im);		
+		#endif		
 	}
 
 
@@ -66,9 +62,6 @@ int main(int argc, char** argv){
 		#ifdef FIXED_POINT
 		float re = unscale32i(output[i].re,16);
 		float im = unscale32i(output[i].im,16);
-		#elif SHORT_FIXED_POINT
-		float re = unscale16i(output[i].re,10);
-		float im = unscale16i(output[i].im,10);
 		#else
 		float re = output[i].re;
 		float im = output[i].im;

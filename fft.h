@@ -1,14 +1,11 @@
-#ifndef JORDAN_FFT_H
-#define JORDAN_FFT_H
+#ifndef FFT_H
+#define FFT_H
 
 typedef struct complex_t complex_t;
 struct complex_t{
 	#ifdef FIXED_POINT
 	int re;
-	int im;
-	#elif SHORT_FIXED_POINT
-	short re;
-	short im;
+	int im;	
 	#else
 	float re;
 	float im;
@@ -16,22 +13,24 @@ struct complex_t{
 };
 
 
-// all these methods are implemented in jordan_fft_util.h
+// all these methods are implemented in fft_util.h
 unsigned Microseconds(void);
-
+// helpter methos used to translate between fixed and floating point representation
 int scale32i(float original_value, int scale);
 float unscale32i(int scaled_value, int scale);
-
+// helper methods used to handle complex numbers,and for debugging
 void print_spaces(int n);
 void print_complex(complex_t c);
 void print_complex_array(complex_t* c, int n);
 void swap_complex_array(complex_t* c, int n);
-//complex_t twiddle(int N,int k);
 void complex_mult(complex_t* left, complex_t* right, complex_t* rs);
 void complex_add(complex_t* left, complex_t* right, complex_t* rs);
+// interface methods used to call the forward,or inverse fft
 int forward_fft(complex_t* input, complex_t* output, unsigned n);
 int inverse_fft(complex_t* input, complex_t* output, unsigned n);
 
+
+// _fft is implemented in the fft*.c file
 // input: pointer to an array of complex input samples
 // ouptut: pointer to an array where the result can be placed.
 // n : the number of samples.
