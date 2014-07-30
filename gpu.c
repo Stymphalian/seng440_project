@@ -33,43 +33,16 @@
 /*
  * TODO: expand this for multiple QPUs
  */
-struct sha256_memory_map
-{
-    /*
-       data layout is:
-         64 words for K constants (accessed as a texture lookup)
-         16x8 (128) words for the 8 H vectors (VPM)
-         16x16 (256) words for the input data (VPM)
-       Total: 448 words
-     */
-    uint32_t data[64 + (128 + 256) * NUM_QPUS];
-    uint32_t code[MAX_CODE_SIZE];
-    /*
-      uniforms are:
-        u1: address of K texture
-        u2: address of H vectors (also output location)
-        u3: address of data buffer
-        u4: number of laps to execute
-     */
-    uint32_t uniforms[NUNIFORMS*NUM_QPUS];
-    uint32_t msg[NUM_QPUS*2];            // msg is a (uniform, code) tuple to execute_qpu
-
-    /* Results are placed back into the H vector */
-};
-
-/*
- * TODO: expand this for multiple QPUs
- */
 struct fft_memory_map
 {
     /*
        data layout is:
 	 twiddles		N/2 complex_t twiddles 
          input (numXsize)	N complex_t samples
-	 output
-     */
+   	 output                 N   
+   */
     
-    complex_t data[64 + (128 + 256) * NUM_QPUS];
+    complex_t data[256 * NUM_QPUS];
     uint32_t code[MAX_CODE_SIZE];
     /*
 	uniforms are:
@@ -95,7 +68,7 @@ static struct
 } fft_qpu_context;
 
 
-int fft_setup_qpu(complex_t* input, complex_t *output, complex_t* twiddles, unsigned N,
+int fft_setup_qpu(complex_t* input, complex_t* output, complex_t* twiddles, unsigned N,
                    unsigned *shader_code, unsigned code_len)
 {
     fft_qpu_context.mb = mbox_open();
@@ -103,6 +76,7 @@ int fft_setup_qpu(complex_t* input, complex_t *output, complex_t* twiddles, unsi
         fprintf(stderr, "Unable to enable QPU\n");
         return -1;
     }
+    
     //TODO: create handle after the bytes are calculated
     // 1 MB should be plenty
     fft_qpu_context.size = 1024 * 1024;
@@ -117,6 +91,7 @@ int fft_setup_qpu(complex_t* input, complex_t *output, complex_t* twiddles, unsi
     unsigned ptr = mem_lock(fft_qpu_context.mb, fft_qpu_context.handle);
     fft_qpu_context.arm_ptr = mapmem(ptr + GPU_MEM_MAP, fft_qpu_context.size);
     fft_qpu_context.ptr = ptr;
+    
     printf("Locked memory at 0x%x = 0x%x\n", ptr, fft_qpu_context.arm_ptr);
 
     struct fft_memory_map *arm_map = (struct fft_memory_map *)
@@ -128,20 +103,25 @@ int fft_setup_qpu(complex_t* input, complex_t *output, complex_t* twiddles, unsi
     fft_qpu_context.vc_msg = ptr + offsetof(struct fft_memory_map, msg);
 
     unsigned N_2 = N /2;
+    printf("Number of twiddles to load: %d\n", N_2);
+    printf("Number of output to set asside: %d\n", N);
     memcpy(arm_map->code, shader_code, code_len);
     memcpy(arm_map->data, twiddles, N_2*sizeof(complex_t));
     memcpy(arm_map->data+N_2, input, N*sizeof(complex_t)*NUM_QPUS);
-    memcpy(arm_map->data+N_2 + N*NUM_QPUS, output, N*sizeof(complex_t)*NUM_QPUS);
+    memcpy(arm_map->data+N_2+N, output, N*sizeof(complex_t)*NUM_QPUS);
     
     int i;
     for (i=0; i < NUM_QPUS; i++) {
         arm_map->uniforms[i*NUNIFORMS+0] = vc_data;         // data (address of twiddle texture)
         arm_map->uniforms[i*NUNIFORMS+1] = vc_data + N_2*sizeof(complex_t) + N * i * sizeof(complex_t);         // address of input vectors
-        arm_map->uniforms[i*NUNIFORMS+2] = vc_data + N_2*sizeof(complex_t) + N*NUM_QPUS*sizeof(complex_t) + N * i * sizeof(complex_t);
         arm_map->msg[i*2+0] = vc_uniforms + i * NUNIFORMS * sizeof(complex_t);
         arm_map->msg[i*2+1] = vc_code;
     }
     
+    printf("Executing the QPU code ...\n");
+    unsigned ret = execute_qpu(fft_qpu_context.mb, NUM_QPUS, fft_qpu_context.vc_msg, 1, 10000);
+    printf("mailbox: execute_qpu return code: %d\n", ret); 
+
     return fft_qpu_context.mb;
 }
 
@@ -190,7 +170,7 @@ void fft_fetch_result(complex_t *output, unsigned N)
     unsigned N_2 = N / 2;
     struct fft_memory_map *arm_map = (struct fft_memory_map *)
                                                 fft_qpu_context.arm_ptr;
-    memcpy(output, arm_map->data+N_2 + N*NUM_QPUS, NUM_QPUS*N*sizeof(complex_t));
+    memcpy(output, arm_map->data+N+N_2, N*NUM_QPUS*sizeof(complex_t));
 }
 
 

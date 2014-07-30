@@ -12,7 +12,7 @@ int main(int argc, char** argv){
 	unsigned run_cpu = 1;	
 
 	if( argc < 3){
-		printf("Usage: %s [-qpu] [sample_size] [forward|inverse] \n", argv[0]);
+		printf("Usage: %s [sample_size] [forward|inverse] [-qpu] \n", argv[0]);
 		return 0;
 	}
 
@@ -36,7 +36,7 @@ int main(int argc, char** argv){
 		return 0;
 	}
 
-	printf("Preparing to grab samples....");
+	printf("Grabbing samples....\n");
 	float re,im;
 	for(i =0;i < sample_size; ++i){		
 		if(EOF == scanf("%f %f",&re,&im) ){
@@ -71,6 +71,11 @@ int main(int argc, char** argv){
 		forward_fft_gpu(input, output, sample_size);
 	}	
 
+	if(!run_cpu) {
+		printf("Fetching the result from output ...\n");
+		fft_fetch_result(output, sample_size);
+	}
+
 	for( i = 0; i < sample_size; ++i){		
 		// bit len: 32b
 		// signed : 1b 
@@ -87,7 +92,7 @@ int main(int argc, char** argv){
 		printf("%f %f\n",re,im);
 		#endif
 	}
-	//print_complex_array(output,sample_size);
+	print_complex_array(output,sample_size);
 #else
 	//compute the fft
 	unsigned total_time = 0;
@@ -104,6 +109,11 @@ int main(int argc, char** argv){
 		} else {
 			forward_fft_gpu(input, output, sample_size);
 		}	
+		
+		if(!run_cpu) {
+			printf("Fetching the result from output ...\n");
+			fft_fetch_result(output, sample_size);
+		}
 		timespent[1] = Microseconds();
 		total_time += (timespent[1] - timespent[0]);
 	}

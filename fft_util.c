@@ -141,10 +141,14 @@ int forward_fft_gpu(complex_t* input, complex_t* output, unsigned n) {
         	return 4;
     	}
     
-	fft_execute_qpu(n);
+	//fft_execute_qpu(n);
+	//printf("Fetching the result from output ...\n");
 	fft_fetch_result(output, n);
-    	fft_cleanup_qpu(handle);
+	
+	print_complex_array(output,n); 
 
+	printf("Performing cleanup ...\n");
+    	fft_cleanup_qpu(handle);
 	_qdestroy(&context);
 
 	return 1;
