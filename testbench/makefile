@@ -18,5 +18,5 @@ rms_test: rms_test.c
 	$(CC) -o rms_test rms_test.o $(LDFLAGS)
 
 clean:
-	rm -rf *.o kiss_fft gen_samples compare_output
+	rm -rf *.o kiss_fft gen_samples rms_test
 	rm  *.exe
