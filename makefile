@@ -9,12 +9,13 @@ CFLAGS=-c -Wall -DPRINT_OUTPUT -DFIXED_POINT
 INFLAGS=-Iinclude 
 
 # -lrt is needed for timing libraries on linux machines
-#LDFLAGS=-L. -lm -lrt
-LDFLAGS=-L. -lm 
+LDFLAGS=-L. -lm -lrt
+#LDFLAGS=-L. -lm 
 
 
 OBJDIR:=objdir
-SOURCES=main.$(CTYPE) fft8.$(CTYPE) fft_util.$(CTYPE)
+#main, fft*
+SOURCES=driver.$(CTYPE) fft9.$(CTYPE) fft_util.$(CTYPE) gpu.$(CTYPE) mailbox.$(CTYPE)   
 OBJECTS=$(addprefix $(OBJDIR)/, $(SOURCES:.$(CTYPE)=.o) )
 
 EXECUTABLE=noin

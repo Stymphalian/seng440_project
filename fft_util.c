@@ -1,10 +1,14 @@
 #include "fft.h"
+#include "gpu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <time.h>
 #include <limits.h>
+
+#define     FFT_QPU_CODE_FILE       "fft.bin"
+#define     IFFT_QPU_CODE_FILE       "ifft.bin"
 
 // Stolen directly from the hello_fft.c  file
 unsigned Microseconds(void){
@@ -109,4 +113,39 @@ int inverse_fft(complex_t* input, complex_t* output, unsigned int n){
 		#endif
 	}
 	return rs;
+}
+
+
+int forward_fft_gpu(complex_t* input, complex_t* output, unsigned n) {
+	if(!input || !output){return 0;}
+    	
+	unsigned int shader_code[MAX_CODE_SIZE];
+	
+	/* Load the QPU code */
+	int code_len = load_qpu_code(FFT_QPU_CODE_FILE, shader_code, MAX_CODE_SIZE);
+	if (code_len < 1) {
+		fprintf(stderr, "Unable to load QPU code from %s\n", FFT_QPU_CODE_FILE);
+		return 2;
+	}
+	printf("Loaded %d bytes of QPU code.\n", code_len);
+
+
+	fft_t context = _qfft(input, output, n);
+	
+	int handle = fft_setup_qpu(context.input, context.output, context.twiddles, n, shader_code, code_len);
+    	if (handle < 0) {
+        	fprintf(stderr, "Unable to setup QPU.  Check permissions\n");
+		free(input);
+		free(output);
+		_qdestroy(&context);
+        	return 4;
+    	}
+    
+	fft_execute_qpu(n);
+	fft_fetch_result(output, n);
+    	fft_cleanup_qpu(handle);
+
+	_qdestroy(&context);
+
+	return 1;
 }
