@@ -68,13 +68,9 @@ int main(int argc, char** argv){
 			forward_fft(input, output, sample_size);
 		}
 	} else {
+		printf("Performing forward fft on gpu\n");
 		forward_fft_gpu(input, output, sample_size);
 	}	
-
-	if(!run_cpu) {
-		printf("Fetching the result from output ...\n");
-		fft_fetch_result(output, sample_size);
-	}
 
 	for( i = 0; i < sample_size; ++i){		
 		// bit len: 32b
@@ -89,10 +85,10 @@ int main(int argc, char** argv){
 		#endif
 
 		#ifdef PRINT_OUTPUT
-		printf("%f %f\n",re,im);
+		printf("After: %f %f\n",re,im);
 		#endif
 	}
-	print_complex_array(output,sample_size);
+	//print_complex_array(output,sample_size);
 #else
 	//compute the fft
 	unsigned total_time = 0;
@@ -110,10 +106,6 @@ int main(int argc, char** argv){
 			forward_fft_gpu(input, output, sample_size);
 		}	
 		
-		if(!run_cpu) {
-			printf("Fetching the result from output ...\n");
-			fft_fetch_result(output, sample_size);
-		}
 		timespent[1] = Microseconds();
 		total_time += (timespent[1] - timespent[0]);
 	}

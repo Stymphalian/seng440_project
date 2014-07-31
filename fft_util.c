@@ -129,10 +129,9 @@ int forward_fft_gpu(complex_t* input, complex_t* output, unsigned n) {
 	}
 	printf("Loaded %d bytes of QPU code.\n", code_len);
 
-
 	fft_t context = _qfft(input, output, n);
 	
-	int handle = fft_setup_qpu(context.input, context.output, context.twiddles, n, shader_code, code_len);
+	int handle = fft_setup_qpu(context.output, context.twiddles, n, shader_code, code_len);
     	if (handle < 0) {
         	fprintf(stderr, "Unable to setup QPU.  Check permissions\n");
 		free(context.input);
@@ -143,11 +142,25 @@ int forward_fft_gpu(complex_t* input, complex_t* output, unsigned n) {
    
 	printf("Tell the QPU to run the code ...\n");
 	fft_execute_qpu(n);
-	printf("Fetching the result from output ...\n");
-	fft_fetch_result(output, n);
-	
-	print_complex_array(output,n); 
+   
+        int i; 
+    	for(i=0;i<n;i++) {
+		// bit len: 32b
+		// signed : 1b 
+		// scale factor: 16 b
+		#ifdef FIXED_POINT
+		float re = unscale32i(output[i].re,16);
+		float im = unscale32i(output[i].im,16);
+		#else
+		float re = output[i].re;
+		float im = output[i].im;
+		#endif
 
+		#ifdef PRINT_OUTPUT
+		printf("output: %f %f\n",re,im);
+		#endif
+        }
+	
 	printf("Performing cleanup ...\n");
     	fft_cleanup_qpu(handle);
 
