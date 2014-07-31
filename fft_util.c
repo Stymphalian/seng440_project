@@ -135,21 +135,21 @@ int forward_fft_gpu(complex_t* input, complex_t* output, unsigned n) {
 	int handle = fft_setup_qpu(context.input, context.output, context.twiddles, n, shader_code, code_len);
     	if (handle < 0) {
         	fprintf(stderr, "Unable to setup QPU.  Check permissions\n");
-		free(input);
-		free(output);
+		free(context.input);
+		free(context.output);
 		_qdestroy(&context);
         	return 4;
     	}
-    
-	//fft_execute_qpu(n);
-	//printf("Fetching the result from output ...\n");
+   
+	printf("Tell the QPU to run the code ...\n");
+	fft_execute_qpu(n);
+	printf("Fetching the result from output ...\n");
 	fft_fetch_result(output, n);
 	
 	print_complex_array(output,n); 
 
 	printf("Performing cleanup ...\n");
     	fft_cleanup_qpu(handle);
-	_qdestroy(&context);
 
 	return 1;
 }

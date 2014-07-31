@@ -17,16 +17,6 @@
 #define GPU_MEM_MAP     0x0
 #define REGISTER_BASE   0x20C00000
 
-#define V3D_SRQPC       0x10c
-#define V3D_SRQUA       0x10d
-#define V3D_SRQUL       0x10e
-#define V3D_SRQCS       0x10f
-
-#define V3D_VPMBASE     0x7e
-
-#define V3D_L2CACTL     0x8
-#define V3D_SLCACTL     0x9
-
 #define NUNIFORMS       3
 
 
@@ -42,7 +32,7 @@ struct fft_memory_map
    	 output                 N   
    */
     
-    complex_t data[256 * NUM_QPUS];
+    complex_t data[1 + (2 + 2) * NUM_QPUS]; //N_2 + N + N
     uint32_t code[MAX_CODE_SIZE];
     /*
 	uniforms are:
@@ -69,17 +59,19 @@ static struct
 
 
 int fft_setup_qpu(complex_t* input, complex_t* output, complex_t* twiddles, unsigned N,
-                   unsigned *shader_code, unsigned code_len)
+                   unsigned *shader_code, unsigned code_bytes)
 {
+    
     fft_qpu_context.mb = mbox_open();
     if (qpu_enable(fft_qpu_context.mb, 1)) {
         fprintf(stderr, "Unable to enable QPU\n");
         return -1;
     }
+   
+    unsigned N_2 = N /2; //assumes we got N as power of 2
     
-    //TODO: create handle after the bytes are calculated
-    // 1 MB should be plenty
-    fft_qpu_context.size = 1024 * 1024;
+    //1MB for now
+    fft_qpu_context.size = 1024*1024; //size
     fft_qpu_context.handle = mem_alloc(fft_qpu_context.mb,
                                           fft_qpu_context.size, 4096,
                                           GPU_MEM_FLG);
@@ -102,25 +94,28 @@ int fft_setup_qpu(complex_t* input, complex_t* output, complex_t* twiddles, unsi
     unsigned vc_code = ptr + offsetof(struct fft_memory_map, code);
     fft_qpu_context.vc_msg = ptr + offsetof(struct fft_memory_map, msg);
 
-    unsigned N_2 = N /2;
+    
     printf("Number of twiddles to load: %d\n", N_2);
     printf("Number of output to set asside: %d\n", N);
-    memcpy(arm_map->code, shader_code, code_len);
+    memcpy(arm_map->code, shader_code, code_bytes);
     memcpy(arm_map->data, twiddles, N_2*sizeof(complex_t));
     memcpy(arm_map->data+N_2, input, N*sizeof(complex_t)*NUM_QPUS);
-    memcpy(arm_map->data+N_2+N, output, N*sizeof(complex_t)*NUM_QPUS);
-    
+    memcpy(arm_map->data+N_2+N*NUM_QPUS, output, N*sizeof(complex_t)*NUM_QPUS);
+   
+    printf("Setting up the uniforms\n"); 
     int i;
     for (i=0; i < NUM_QPUS; i++) {
         arm_map->uniforms[i*NUNIFORMS+0] = vc_data;         // data (address of twiddle texture)
         arm_map->uniforms[i*NUNIFORMS+1] = vc_data + N_2*sizeof(complex_t) + N * i * sizeof(complex_t);         // address of input vectors
-        arm_map->msg[i*2+0] = vc_uniforms + i * NUNIFORMS * sizeof(complex_t);
+        arm_map->uniforms[i*NUNIFORMS+2] = vc_data + N_2*sizeof(complex_t) + N*NUM_QPUS*sizeof(complex_t) + N * i * sizeof(complex_t);
+        
+	arm_map->msg[i*2+0] = vc_uniforms + i * NUNIFORMS * sizeof(complex_t);
         arm_map->msg[i*2+1] = vc_code;
     }
     
-    printf("Executing the QPU code ...\n");
-    unsigned ret = execute_qpu(fft_qpu_context.mb, NUM_QPUS, fft_qpu_context.vc_msg, 1, 10000);
-    printf("mailbox: execute_qpu return code: %d\n", ret); 
+    //printf("Executing the QPU code ...\n");
+    //unsigned ret = execute_qpu(fft_qpu_context.mb, NUM_QPUS, fft_qpu_context.vc_msg, 1, 10000);
+    //printf("mailbox: execute_qpu return code: %d\n", ret); 
 
     return fft_qpu_context.mb;
 }
@@ -128,30 +123,10 @@ int fft_setup_qpu(complex_t* input, complex_t* output, complex_t* twiddles, unsi
 
 void fft_execute_qpu(unsigned N)
 {
-    struct fft_memory_map *arm_map = (struct fft_memory_map *)
-                                                fft_qpu_context.arm_ptr;
-
-    uint32_t qst = fft_qpu_context.registers[V3D_SRQCS];
-    int qlength = qst & 0x3f;
-    int qreqs = (qst >> 8) & 0xFF;
-    int qcomp = (qst >> 16) & 0xFF;
-    int qerr = (qst >> 7) & 0x1;
-    printf("Queue length: %d, completed: %d, requests: %d, err: %d\n", qlength, qcomp, qreqs, qerr);
-    int target = (qcomp + NUM_QPUS) % N;
-
-    int i;
-    for (i=0; i < NUM_QPUS; i++)
-    {
-        fft_qpu_context.registers[V3D_SRQUL] = NUNIFORMS;
-        fft_qpu_context.registers[V3D_SRQUA] = arm_map->msg[i*2+0];
-        fft_qpu_context.registers[V3D_SRQPC] = arm_map->msg[i*2+1];
-    }
-
-    do {
-        qst = fft_qpu_context.registers[V3D_SRQCS];
-        qcomp = (qst >> 16) & 0xFF;
-    } while (qcomp != target);
-    printf("Queue length: %d, completed: %d, requests: %d, err: %d\n", qlength, qcomp, qreqs, qerr);
+    unsigned ret = execute_qpu(fft_qpu_context.mb, NUM_QPUS,
+                               fft_qpu_context.vc_msg, 1, 10000);
+    if (ret != 0)
+        fprintf(stderr, "Failed execute_qpu!\n");
 }
 
 
