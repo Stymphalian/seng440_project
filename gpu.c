@@ -73,10 +73,10 @@ int fft_setup_qpu(complex_t* output, complex_t* twiddles, unsigned N,
     for(i=0;i<N_2;i++) {
 		// bit len: 32b
 		// signed : 1b 
-		// scale factor: 16 b
+		// scale factor: 12 b
 		#ifdef FIXED_POINT
-		float re = unscale32i(twiddles[i].re,16);
-		float im = unscale32i(twiddles[i].im,16);
+		float re = unscale32i(twiddles[i].re,SCALE_FACTOR);
+		float im = unscale32i(twiddles[i].im,SCALE_FACTOR);
 		#else
 		float re = twiddles[i].re;
 		float im = twiddles[i].im;
