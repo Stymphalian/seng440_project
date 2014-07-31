@@ -7,7 +7,6 @@
 #include <limits.h>
 
 
-
 int main(int argc, char** argv){
 	unsigned run_cpu = 1;	
 
@@ -36,7 +35,7 @@ int main(int argc, char** argv){
 		return 0;
 	}
 
-	printf("Grabbing samples....\n");
+//	printf("Grabbing samples....\n");
 	float re,im;
 	for(i =0;i < sample_size; ++i){		
 		if(EOF == scanf("%f %f",&re,&im) ){
@@ -50,8 +49,8 @@ int main(int argc, char** argv){
 		// -2048....2048: 2^15
 		// scale factor: 2^16
 		#ifdef FIXED_POINT
-		input[i].re = scale32i(re,16);
-		input[i].im = scale32i(im,16);				
+		input[i].re = scale32i(re,SCALE_FACTOR);
+		input[i].im = scale32i(im,SCALE_FACTOR);
 		#else
 		input[i].re = re;
 		input[i].im = im;
@@ -68,7 +67,7 @@ int main(int argc, char** argv){
 			forward_fft(input, output, sample_size);
 		}
 	} else {
-		printf("Performing forward fft on gpu\n");
+//		printf("Performing forward fft on gpu\n");
 		forward_fft_gpu(input, output, sample_size);
 	}	
 
@@ -77,18 +76,18 @@ int main(int argc, char** argv){
 		// signed : 1b 
 		// scale factor: 16 b
 		#ifdef FIXED_POINT
-		float re = unscale32i(output[i].re,16);
-		float im = unscale32i(output[i].im,16);
+		float re = unscale32i(output[i].re,SCALE_FACTOR);
+		float im = unscale32i(output[i].im,SCALE_FACTOR);
 		#else
 		float re = output[i].re;
 		float im = output[i].im;
 		#endif
 
 		#ifdef PRINT_OUTPUT
-		printf("After: %f %f\n",re,im);
+//		printf("After: %f %f\n",re,im);
+		printf("%f %f\n",re,im);
 		#endif
 	}
-	//print_complex_array(output,sample_size);
 #else
 	//compute the fft
 	unsigned total_time = 0;

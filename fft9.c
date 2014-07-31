@@ -158,24 +158,24 @@ void _fft2(fft_t* context,complex_t* output,unsigned n){
 				Y_k = out[i];
 				Z_k = out[i + (block_size >> 1)];	
 				
-				// W = 2^16 b signed
+				// W = 2^12 b signed
 				W = context->twiddles[(n >> level)*i];				
 				
 				// complex_multiplication
-				// Z = 2^16 signed
-				// scaling factor 2^16 * 2^30 --> 2^46 --> 2^16
+				// Z = 2^12 signed
+				// scaling factor 2^12 * 2^30 --> 2^43 --> 2^12
 				temp_re = ((long long int)W.re*Z_k.re >> 30) - ((long long int)W.im*Z_k.im >> 30);
 				temp_im = ((long long int)W.im*Z_k.re >> 30) + ((long long int)W.re*Z_k.im >> 30);				
 
 				
 				// place into output buffer.
-				// out = 2^16  + 2^16 -> 2^16
-				out[i].re = (Y_k.re) + (temp_re); // Y_k = 2^16, temp_re = 2^16 -> 2^16
-				out[i].im = (Y_k.im) + (temp_im); // Y_k = 2^16, temp_im = 2^16 -> 2^16
+				// out = 2^12  + 2^12 -> 2^12
+				out[i].re = (Y_k.re) + (temp_re); // Y_k = 2^12, temp_re = 2^12 -> 2^12
+				out[i].im = (Y_k.im) + (temp_im); // Y_k = 2^12, temp_im = 2^12 -> 2^12
 				
 				// place into output buffer.
-				out[i + (block_size >>1 )].re = (Y_k.re) - (temp_re); // Y_k = 2^16, temp_re = 2^16 -> 2^16
-				out[i + (block_size >>1 )].im = (Y_k.im) - (temp_im); // Y_k = 2^16, temp_im = 2^16 -> 2^16
+				out[i + (block_size >>1 )].re = (Y_k.re) - (temp_re); // Y_k = 2^12, temp_re = 2^12 -> 2^12
+				out[i + (block_size >>1 )].im = (Y_k.im) - (temp_im); // Y_k = 2^12, temp_im = 2^12 -> 2^12
 			}
 		}
 		block_size  = block_size << 1;		

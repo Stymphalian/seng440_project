@@ -1,6 +1,8 @@
 #ifndef FFT_H
 #define FFT_H
 
+#define SCALE_FACTOR 12
+
 // @Purpose:
 // Structure representing a complex number
 // re = real component
