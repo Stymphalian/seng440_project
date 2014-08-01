@@ -3,12 +3,13 @@ define(`NOP', `nop ra39, ra39, ra39;  nop rb39, rb39, rb39')
 ## Move the uniforms (arguments) into registers
 or ra31, ra32, 0;           nop         # address of twiddle in ra31
 or ra30, ra32, 0;           nop         # address of io in ra30
+#or ra29, ra32, 0;           nop         # stride 
 
 ## Load some rotation constants that don't fit in small immediates
 ldi rb2, 0x1E; //30
 
-## VCD DMA setup for the output vectors (16x8)
-# (16x8) => ldi ra49, 0x82801000
+## VCD DMA setup for the output vectors to load
+# Assumes 16*8 twiddles 
 # ID MODEW MPITCH ROWL NROW VPITCH H Addr
 # 1    000   0010 1000 0000   0001 0 000 0000 0000
 ldi ra49, 0x82801000
@@ -19,10 +20,11 @@ or ra50, ra30, 0;           nop
 ## Wait for the DMA to complete
 and rb39, ra50, ra50;           nop
 
-## Configure the VPM for reading the outpu vectors
+## Configure the VPM for reading the output vectors
 ldi ra49, 0x801200
 
-## Read the H vectors into registers ra20..ra27 
+# This would likely need to be overloaded
+## Read the twiddle vectors into registers ra20..ra27 
 ## Also copy them into rb20..rb27 (we need the original values to write back)
 or ra20, ra48, 0;           v8max rb20, ra48, ra48;
 or ra21, ra48, 0;           v8max rb21, ra48, ra48;
@@ -34,7 +36,7 @@ or ra26, ra48, 0;           v8max rb26, ra48, ra48;
 or ra27, ra48, 0;           v8max rb27, ra48, ra48;
 
 
-## FFT
+## FFT - unimplemented
 #num_levels = log_2(n)
 #W=current twiddle
 #Z_k=butterfly
@@ -67,6 +69,7 @@ NOP
 ## Configure the VPM to write the H vectors back into place
 ldi rb49, 0x1200
 
+# Again, would need to be overloaded or looped or something
 ## Write output vectors back (+=)
 add rb48, ra20, rb20;       nop
 add rb48, ra21, rb21;       nop

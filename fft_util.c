@@ -129,8 +129,10 @@ int forward_fft_gpu(complex_t* input, complex_t* output, unsigned n) {
 	}
 	printf("Loaded %d bytes of QPU code.\n", code_len);
 
+	/* Grab the FFT context */
 	fft_t context = _qfft(input, output, n);
 	
+	/* Setup up the QPU with out twiddle and input values */
 	int handle = fft_setup_qpu(context.output, context.twiddles, n, shader_code, code_len);
     	if (handle < 0) {
         	fprintf(stderr, "Unable to setup QPU.  Check permissions\n");
@@ -142,7 +144,8 @@ int forward_fft_gpu(complex_t* input, complex_t* output, unsigned n) {
    
 	printf("Tell the QPU to run the code ...\n");
 	fft_execute_qpu(n);
-   
+  
+        /* For debugging purposes */ 
         int i; 
     	for(i=0;i<n;i++) {
 		// bit len: 32b

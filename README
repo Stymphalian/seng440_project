@@ -81,6 +81,17 @@ time_benchmark/
 	3. gprof ./noin >data{x}
 
 
+-----GPU-----
+qpu_test/
+	Folder contains the basic files for a hello world version of the qpu code
+	Does not currenly work 100%. But basically adds two numbers together.
+        The butterfly.asm has the better commented code.
+
+gpu.c   Contains the GPU functions (requires gpu.h)
+
+mailbox.c  Part of the userland RPi firmware, added to project for convenience
+	
+
 
 FUTURE IMPROVEMENTS:
 1. Memory thrasing.When performing the butterfly, the indices of each half of the butter fly 

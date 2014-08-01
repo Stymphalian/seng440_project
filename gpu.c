@@ -68,7 +68,8 @@ int fft_setup_qpu(complex_t* output, complex_t* twiddles, unsigned N,
     unsigned N_2 = N /2; //assumes we got N as power of 2
     printf("Number of twiddles to load: %d\n", N_2);
     printf("Number of output to set asside: %d\n", N);
-    
+   
+    //for debugging purposes 
     int i;
     for(i=0;i<N_2;i++) {
 		// bit len: 32b
@@ -88,7 +89,7 @@ int fft_setup_qpu(complex_t* output, complex_t* twiddles, unsigned N,
     }
     
     //1MB for now
-    fft_qpu_context.size = 1024*1024; //size
+    fft_qpu_context.size = 1024*1024; 
     fft_qpu_context.handle = mem_alloc(fft_qpu_context.mb,
                                           fft_qpu_context.size, 4096,
                                           GPU_MEM_FLG);
@@ -97,13 +98,15 @@ int fft_setup_qpu(complex_t* output, complex_t* twiddles, unsigned N,
                         fft_qpu_context.size);
         return -2;
     }
-    
+   
+    //Allocate space for GPU memory and map to ARM pointer 
     unsigned ptr = mem_lock(fft_qpu_context.mb, fft_qpu_context.handle);
     fft_qpu_context.arm_ptr = mapmem(ptr + GPU_MEM_MAP, fft_qpu_context.size);
     fft_qpu_context.ptr = ptr;
     
     printf("Locked memory at 0x%x = 0x%x\n", ptr, fft_qpu_context.arm_ptr);
 
+    //Set up ARM memory memory map to be passed to the GPU
     struct fft_memory_map *arm_map = (struct fft_memory_map *)
                                                 fft_qpu_context.arm_ptr;
     memset(arm_map, 0x0, sizeof(struct fft_memory_map));
@@ -112,6 +115,7 @@ int fft_setup_qpu(complex_t* output, complex_t* twiddles, unsigned N,
     unsigned vc_code = ptr + offsetof(struct fft_memory_map, code);
     fft_qpu_context.vc_msg = ptr + offsetof(struct fft_memory_map, msg);
 
+    //Copy over the QPU code and uniform addresses
     memcpy(arm_map->code, shader_code, code_bytes);
     memcpy(arm_map->data, twiddles, N_2*sizeof(complex_t));
     memcpy(arm_map->data+N_2,output, N*sizeof(complex_t)*NUM_QPUS);
