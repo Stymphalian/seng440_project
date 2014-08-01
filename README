@@ -86,6 +86,5 @@ FUTURE IMPROVEMENTS:
 1. Memory thrasing.When performing the butterfly, the indices of each half of the butter fly 
 are N/2 away from each other. Given that N can be quite large, this will probably incur
 cache misses,thereby killig our performance.
-2. Very large error rates for forward transform for sample sizes > 65536
-3. Create look-up tables for cos and sin values.
-4. Compile with -O3 for compiler optimizations.
+2. Create look-up tables for cos and sin values.
+3. Compile with -O3 for compiler optimizations.
