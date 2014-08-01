@@ -29,7 +29,11 @@ void root_mean_square(complex_t* error, int n ){
 	temp.im /= n;
 	
 	double r = sqrt(temp.re*temp.re + temp.im*temp.im);
+#ifdef VERBOSE
 	printf("real rms=%.20f\n",r);
+#else
+	printf("%.20f\n",r);
+#endif
 }
 
 int main(int argc, char** argv){

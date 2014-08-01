@@ -1,5 +1,6 @@
 CC=gcc
-CFLAGS=-c -Wall
+#CFLAGS=-c -Wall
+CFLAGS=-c -Wall -VERBOSE
 INFLAGS=-Iinclude
 LDFLAGS=-L. -lm
 
