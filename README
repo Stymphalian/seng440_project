@@ -1,3 +1,13 @@
+Date Modified: 
+	August 1st, 2014
+Authors:
+	Amanda Dash	, V00768568
+	Jordan Yu	, V00727036
+For:
+	SENG 499
+	Prof. Sima
+
+
 fft.h 
 	header file for basic fft functions.
 	the header file includes the following function prototypes:

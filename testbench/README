@@ -14,6 +14,8 @@
 		The program should be called "noin".
 		You can name it whatever you want, just be sure to set the appropriate
 		variables in the test scripts ( e.g test.sh)
+		** Ensure that the only output to stdout are the output values of the transforms
+			This means please remove all print statements **
 
 4) test.sh > rs.test
 		Run the test.sh script.
